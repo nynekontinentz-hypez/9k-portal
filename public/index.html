@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9K Systems - IT That Actually Works</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #111827;
+            --accent: #22d3ee;
+            --accent-dim: #0e7490;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --glow: rgba(34, 211, 238, 0.15);
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        .nav-tag {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            background: var(--glow);
+            border: 1px solid var(--accent-dim);
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            margin-bottom: 2rem;
+            width: fit-content;
+        }
+        
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        h1 em {
+            font-style: normal;
+            color: var(--accent);
+        }
+        
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            line-height: 1.7;
+        }
+
+        /* Metric bar */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 5rem auto;
+            max-width: 900px;
+        }
+        
+        .metric {
+            background: var(--bg-card);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* Services */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .section-label {
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 1rem;
+        }
+        
+        .section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        
+        .section-desc {
+            color: var(--text-secondary);
+            max-width: 520px;
+            margin-bottom: 3rem;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .service {
+            background: var(--bg-card);
+            padding: 2rem;
+        }
+        
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--glow);
+            border: 1px solid var(--accent-dim);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .service h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Approach */
+        .approach-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .approach-item {
+            background: var(--bg-card);
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 48px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        
+        .approach-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-dim);
+        }
+        
+        .approach-item h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+        
+        .approach-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Closing */
+        .closing {
+            padding: 6rem 2rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .closing h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            line-height: 1.25;
+        }
+        
+        .closing p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-location {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            nav { padding: 1rem 1.25rem; }
+            .hero { padding: 7rem 1.25rem 3rem; }
+            .metrics { grid-template-columns: 1fr; }
+            .section { padding: 3rem 1.25rem; }
+            .services-grid { grid-template-columns: 1fr; }
+            .approach-item { grid-template-columns: 36px 1fr; gap: 1rem; }
+            .closing { padding: 4rem 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    
+    <nav>
+        <a href="/" class="logo" style="text-decoration:none">9K<span>Systems</span></a>
+        <div style="display:flex;gap:1.5rem;align-items:center;">
+            <a href="/services" style="color:var(--text-secondary);text-decoration:none;font-size:0.85rem;transition:color 0.2s;">Services</a>
+            <a href="/admin" style="color:var(--text-secondary);text-decoration:none;font-size:0.85rem;transition:color 0.2s;">Dashboard</a>
+            <a href="/submit-ticket" style="color:var(--bg-dark);background:var(--accent);text-decoration:none;font-size:0.85rem;padding:0.4rem 1rem;border-radius:100px;font-weight:600;transition:background 0.2s;">Get Support</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">Serving Florida businesses</div>
+        <h1>Your IT should work <em>for</em> you, not against you.</h1>
+        <p class="hero-sub">Managed IT, cybersecurity, and cloud services for small businesses across Florida. One consultant. Zero runaround. Systems that actually hold up.</p>
+    </section>
+
+    <div class="metrics">
+        <div class="metric">
+            <div class="metric-value">3.5M</div>
+            <div class="metric-label">FL small businesses</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">82%</div>
+            <div class="metric-label">Underserved by big MSPs</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">24/7</div>
+            <div class="metric-label">Monitoring & support</div>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="section-label">Services</div>
+        <h2>Everything your business needs. Nothing it doesn't.</h2>
+        <p class="section-desc">No bloated contracts. No upselling. Just the IT infrastructure that keeps your team productive and your data safe.</p>
+        
+        <div class="services-grid">
+            <div class="service">
+                <div class="service-icon">&#128737;</div>
+                <h3>Managed IT Services</h3>
+                <p>Proactive monitoring, maintenance, and help desk support. Flat monthly rate. No surprises on your bill.</p>
+            </div>
+            <div class="service">
+                <div class="service-icon">&#128272;</div>
+                <h3>Cybersecurity</h3>
+                <p>Endpoint protection, threat detection, compliance readiness. Enterprise-grade security sized for your budget.</p>
+            </div>
+            <div class="service">
+                <div class="service-icon">&#9729;</div>
+                <h3>Cloud & Migration</h3>
+                <p>Microsoft 365, cloud backup, hybrid infrastructure. Migrate without the downtime or the headaches.</p>
+            </div>
+            <div class="service">
+                <div class="service-icon">&#128200;</div>
+                <h3>Virtual CIO</h3>
+                <p>Strategic technology planning aligned to your business goals. A technology roadmap, not just break-fix tickets.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-label">How it works</div>
+        <h2>Simple process. Real results.</h2>
+        <p class="section-desc">No 6-month onboarding. No committee of account managers. Here's how we work together.</p>
+        
+        <div class="approach-list">
+            <div class="approach-item">
+                <div class="approach-num">01</div>
+                <div>
+                    <h3>Audit</h3>
+                    <p>Full assessment of your current systems, security posture, and pain points. We find what's broken and what's about to break.</p>
+                </div>
+            </div>
+            <div class="approach-item">
+                <div class="approach-num">02</div>
+                <div>
+                    <h3>Plan</h3>
+                    <p>A clear roadmap with priorities, timelines, and transparent pricing. You approve everything before we touch a single system.</p>
+                </div>
+            </div>
+            <div class="approach-item">
+                <div class="approach-num">03</div>
+                <div>
+                    <h3>Execute</h3>
+                    <p>Implementation, migration, and hardening. We handle the complexity so your team stays productive through the transition.</p>
+                </div>
+            </div>
+            <div class="approach-item">
+                <div class="approach-num">04</div>
+                <div>
+                    <h3>Monitor</h3>
+                    <p>Ongoing management, proactive alerts, and regular reviews. Problems get caught before your employees notice them.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="closing">
+        <h2>Big-firm capability. Small-firm responsiveness. Zero corporate runaround.</h2>
+        <p>9K Systems exists because Florida's small businesses deserve IT support that actually picks up the phone. Built lean, stays lean.</p>
+    </section>
+
+    <footer>
+        <div class="footer-logo">9K Systems</div>
+        <div class="footer-location">Florida</div>
+    </footer>
+
+    <!-- Polsia Analytics -->
+    <script>
+    (function() {
+        var slug = 'ninekos';
+        if (!slug) return;
+        var vid = localStorage.getItem('polsia_vid');
+        if (!vid) {
+            vid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem('polsia_vid', vid);
+        }
+        new Image().src = 'https://polsia.com/api/beacon/pixel?s=' + encodeURIComponent(slug) + '&v=' + encodeURIComponent(vid);
+    })();
+    </script>
+</body>
+</html>

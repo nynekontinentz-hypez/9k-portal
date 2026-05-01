@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9K Systems - Managed IT Service Plans & Pricing</title>
+    <meta name="description" content="Managed IT service plans for Florida small businesses. Essential, Professional, and Enterprise tiers priced 30–40% below market. No hidden fees, no hourly overages.">
+    <meta property="og:title" content="9K Systems - Managed IT Service Plans & Pricing">
+    <meta property="og:description" content="Managed IT, cybersecurity, and cloud services for Florida small businesses. Per-user pricing starting at $89/user/mo.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://portal.9ksystems.net/services">
+    <meta property="og:image" content="https://portal.9ksystems.net/og-services.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="9K Systems - Managed IT Service Plans & Pricing">
+    <meta name="twitter:description" content="Managed IT, cybersecurity, and cloud services for Florida small businesses. Per-user pricing starting at $89/user/mo.">
+    <link rel="canonical" href="https://portal.9ksystems.net/services">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #111827;
+            --bg-card-hover: #151d2e;
+            --accent: #22d3ee;
+            --accent-dim: #0e7490;
+            --accent-hover: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --glow: rgba(34, 211, 238, 0.15);
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+        .grain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1; }
+
+        /* Nav */
+        nav { position: fixed; top: 0; width: 100%; padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: rgba(10, 14, 23, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); letter-spacing: -0.02em; text-decoration: none; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); }
+        .nav-cta { color: var(--bg-dark) !important; background: var(--accent); padding: 0.4rem 1rem; border-radius: 100px; font-weight: 600; transition: background 0.2s !important; }
+        .nav-cta:hover { background: var(--accent-hover) !important; color: var(--bg-dark) !important; }
+
+        /* Page header */
+        .page-header { max-width: 900px; margin: 0 auto; padding: 8rem 2rem 3rem; text-align: center; position: relative; z-index: 2; }
+        .page-badge { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--accent); background: var(--glow); border: 1px solid var(--accent-dim); padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 1.5rem; }
+        .page-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .page-header h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem; }
+        .page-header h1 em { font-style: normal; color: var(--accent); }
+        .page-header p { color: var(--text-secondary); font-size: 1.1rem; max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+        /* Pricing grid */
+        .pricing-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 5rem; position: relative; z-index: 2; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .pricing-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem 2rem; display: flex; flex-direction: column; transition: border-color 0.3s, transform 0.3s; position: relative; }
+        .pricing-card:hover { border-color: var(--accent-dim); transform: translateY(-4px); }
+        .pricing-card.featured { border-color: var(--accent); }
+        .pricing-card.featured::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg-dark); font-size: 0.7rem; font-weight: 700; padding: 0.25rem 1rem; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+        .tier-name { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .tier-desc { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.5; min-height: 42px; }
+        .tier-price { font-family: 'Space Grotesk', sans-serif; font-size: 2.8rem; font-weight: 700; color: var(--text-primary); line-height: 1; margin-bottom: 0.25rem; }
+        .tier-price .dollar { font-size: 1.6rem; vertical-align: top; position: relative; top: 0.3rem; color: var(--accent); }
+        .tier-period { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .tier-market { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.5rem; font-style: italic; }
+
+        .tier-divider { width: 100%; height: 1px; background: var(--border); margin-bottom: 1.5rem; }
+
+        .features-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; font-weight: 600; }
+        .features-list { list-style: none; margin-bottom: 2rem; flex: 1; }
+        .features-list li { padding: 0.4rem 0; font-size: 0.88rem; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 0.6rem; line-height: 1.4; }
+        .features-list li::before { content: '\2713'; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+        .btn-consult { display: flex; align-items: center; justify-content: center; width: 100%; padding: 0.75rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; font-family: inherit; cursor: pointer; text-decoration: none; transition: all 0.2s; text-align: center; }
+        .btn-consult-primary { background: var(--accent); color: var(--bg-dark); border: none; }
+        .btn-consult-primary:hover { background: var(--accent-hover); }
+        .btn-consult-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-consult-outline:hover { border-color: var(--accent-dim); color: var(--accent); }
+
+        /* Add-ons section */
+        .addons-section { max-width: 900px; margin: 0 auto; padding: 0 2rem 5rem; position: relative; z-index: 2; }
+        .addons-section .section-label { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1rem; }
+        .addons-section h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+        .addons-section .section-desc { color: var(--text-secondary); max-width: 520px; margin-bottom: 2rem; font-size: 0.95rem; }
+        .addons-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+        .addons-table th { text-align: left; padding: 0.6rem 1rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        .addons-table td { padding: 0.85rem 1rem; color: var(--text-secondary); border-bottom: 1px solid var(--border); vertical-align: top; }
+        .addons-table td:first-child { color: var(--text-primary); font-weight: 500; }
+        .addons-table td.addon-price { color: var(--accent); font-weight: 600; white-space: nowrap; }
+        .addons-table tr:last-child td { border-bottom: none; }
+        .addons-table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .addon-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.75rem; }
+
+        /* Comparison strip */
+        .compare-section { max-width: 900px; margin: 0 auto; padding: 0 2rem 5rem; position: relative; z-index: 2; }
+        .compare-section .section-label { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1rem; }
+        .compare-section h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 1rem; }
+        .compare-section .section-desc { color: var(--text-secondary); max-width: 520px; margin-bottom: 2.5rem; font-size: 0.95rem; }
+        .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .compare-item { background: var(--bg-card); padding: 1.75rem; text-align: center; }
+        .compare-value { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--accent); margin-bottom: 0.25rem; }
+        .compare-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+        /* Bottom CTA */
+        .bottom-cta { max-width: 700px; margin: 0 auto; padding: 0 2rem 6rem; text-align: center; position: relative; z-index: 2; }
+        .bottom-cta h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 1rem; line-height: 1.25; }
+        .bottom-cta p { color: var(--text-secondary); font-size: 1rem; max-width: 480px; margin: 0 auto 2rem; }
+        .bottom-cta a { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--accent); color: var(--bg-dark); padding: 0.75rem 1.8rem; border-radius: 100px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: background 0.2s; }
+        .bottom-cta a:hover { background: var(--accent-hover); }
+
+        /* Footer */
+        footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; position: relative; z-index: 2; }
+        .footer-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .footer-sub { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Free audit note */
+        .pricing-note { text-align: center; margin-bottom: 2rem; font-size: 0.85rem; color: var(--text-secondary); background: var(--glow); border: 1px solid var(--accent-dim); border-radius: 10px; padding: 0.75rem 1.25rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .pricing-note-wrap { text-align: center; margin-bottom: 2rem; }
+
+        /* Loading state */
+        .loading { text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 0.9rem; }
+        .loading-dot { display: inline-block; width: 8px; height: 8px; background: var(--accent-dim); border-radius: 50%; margin: 0 3px; animation: loadPulse 1.4s ease-in-out infinite; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes loadPulse { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+            .pricing-card.featured { order: -1; }
+        }
+        @media (max-width: 640px) {
+            nav { padding: 1rem 1.25rem; }
+            .page-header { padding: 7rem 1.25rem 2rem; }
+            .pricing-section { padding: 0 1.25rem 3rem; }
+            .addons-section { padding: 0 1.25rem 3rem; }
+            .compare-section { padding: 0 1.25rem 3rem; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .bottom-cta { padding: 0 1.25rem 4rem; }
+            .addons-table th:last-child, .addons-table td:last-child { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+
+    <nav>
+        <a href="/" class="logo">9K<span>Systems</span></a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/services" class="active">Services</a>
+            <a href="/submit-ticket" class="nav-cta">Get Support</a>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="page-badge">Service Plans</div>
+        <h1>IT that <em>scales</em> with your business.</h1>
+        <p>Priced 30–40% below comparable Florida MSPs. No hidden fees, no hourly overages, no surprise invoices. Pick the tier that fits your team size.</p>
+    </section>
+
+    <section class="pricing-section">
+        <div class="pricing-note-wrap">
+            <span class="pricing-note">💡 All plans start with a free 30-min audit — no commitment required</span>
+        </div>
+        <div class="pricing-grid" id="pricingGrid">
+            <div class="loading">
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="addons-section">
+        <div class="section-label">À La Carte Add-Ons</div>
+        <h2>Only pay for what you need.</h2>
+        <p class="section-desc">Layer on extra coverage without upgrading your whole plan.</p>
+        <div class="addons-table-wrap">
+            <table class="addons-table">
+                <thead>
+                    <tr>
+                        <th>Add-on</th>
+                        <th>Price</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Security Awareness Training</td>
+                        <td class="addon-price">$12/user/mo</td>
+                        <td>Phishing simulations &amp; staff training</td>
+                    </tr>
+                    <tr>
+                        <td>Dark Web Monitoring</td>
+                        <td class="addon-price">$25/mo</td>
+                        <td>Credential &amp; data breach alerts</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft 365 Backup</td>
+                        <td class="addon-price">$8/user/mo</td>
+                        <td>Full mailbox + Teams + SharePoint backup</td>
+                    </tr>
+                    <tr>
+                        <td>Onsite Support</td>
+                        <td class="addon-price">$125/hr</td>
+                        <td>Scheduled on-site visits anywhere in Florida</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Migration Project</td>
+                        <td class="addon-price">Custom</td>
+                        <td>Full migration scoping, execution &amp; testing</td>
+                    </tr>
+                    <tr>
+                        <td>IT Audit &amp; Assessment</td>
+                        <td class="addon-price">Free*</td>
+                        <td>Deep-dive infrastructure &amp; security audit</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="addon-note">* Free IT audit — 30 minutes, no obligation required.</p>
+    </section>
+
+    <section class="compare-section">
+        <div class="section-label">Why 9K Systems</div>
+        <h2>What you get that big MSPs won't give you.</h2>
+        <p class="section-desc">Enterprise tools sized for your budget. A real person who picks up the phone. No 47-page contract.</p>
+        <div class="compare-grid">
+            <div class="compare-item">
+                <div class="compare-value">1</div>
+                <div class="compare-label">Dedicated consultant</div>
+            </div>
+            <div class="compare-item">
+                <div class="compare-value">&lt;1hr</div>
+                <div class="compare-label">Avg response time</div>
+            </div>
+            <div class="compare-item">
+                <div class="compare-value">0</div>
+                <div class="compare-label">Hidden fees</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bottom-cta">
+        <h2>Start with a free IT audit.</h2>
+        <p>30 minutes. We review your current setup, identify vulnerabilities and gaps, and give you a plain-English picture of where things stand — no sales pitch, no obligation.</p>
+        <a href="/submit-ticket?subject=Free%20IT%20Audit%20Request">Book Free Audit →</a>
+    </section>
+
+    <footer>
+        <div class="footer-logo">9K Systems</div>
+        <div class="footer-sub">Florida IT Support &bull; Available 24/7</div>
+    </footer>
+
+    <script>
+    (function() {
+        var tierIcons = {
+            'essential': '\u{1F6E1}',
+            'essentials': '\u{1F6E1}',
+            'professional': '\u{2699}',
+            'enterprise': '\u{1F3E2}'
+        };
+        var featuredTier = 'professional';
+        // Market rate savings text matching 9ksystems.net exactly
+        var marketRateText = {
+            'essential':    'Market rate: $125\u2013$150/user \u00b7 You save ~35%',
+            'professional': 'Market rate: $200\u2013$250/user \u00b7 You save ~35%',
+            'enterprise':   'Market rate: $300\u2013$400/user \u00b7 You save ~35%'
+        };
+
+        function formatPrice(price) {
+            var num = Math.round(parseFloat(price));
+            return num.toLocaleString('en-US');
+        }
+
+        function buildCard(tier) {
+            var key = tier.name.toLowerCase().trim();
+            var isFeatured = key === featuredTier;
+            var features = tier.features || [];
+
+            var card = document.createElement('div');
+            card.className = 'pricing-card' + (isFeatured ? ' featured' : '');
+
+            // Split description into tagline and market rate note if present
+            var desc = tier.description || '';
+            var descParts = desc.split('. Market rate:');
+            var tagline = descParts[0];
+            var savingsHtml = '';
+            if (descParts.length > 1) {
+                savingsHtml = '<div class="tier-savings">Market rate: ' + escapeHtml(descParts[1]) + '</div>';
+            }
+
+            var featuresHtml = '';
+            for (var i = 0; i < features.length; i++) {
+                featuresHtml += '<li>' + escapeHtml(features[i]) + '</li>';
+            }
+            if (features.length === 0) {
+                featuresHtml = '<li>Full managed IT support</li><li>24/7 monitoring</li><li>Cybersecurity protection</li>';
+            }
+
+            var btnClass = isFeatured ? 'btn-consult btn-consult-primary' : 'btn-consult btn-consult-outline';
+            var consultUrl = 'https://calendly.com/carlosforsoii/30min';
+
+            var marketRate = marketRateText[key] || '';
+            card.innerHTML =
+                '<div class="tier-name">' + escapeHtml(tier.name) + '</div>' +
+                '<div class="tier-desc">' + escapeHtml(tagline) + '</div>' +
+                '<div class="tier-price"><span class="dollar">$</span>' + formatPrice(tier.monthly_price) + '</div>' +
+                '<div class="tier-period">per user / mo</div>' +
+                (marketRate ? '<div class="tier-market">' + marketRate + '</div>' : '') +
+                '<div class="tier-divider"></div>' +
+                '<div class="features-label">What\'s included</div>' +
+                '<ul class="features-list">' + featuresHtml + '</ul>' +
+                '<a href="' + consultUrl + '" class="' + btnClass + '">Get Started \u2192</a>';
+
+            return card;
+        }
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        function renderError() {
+            var grid = document.getElementById('pricingGrid');
+            grid.innerHTML =
+                '<div style="grid-column:1/-1;text-align:center;padding:3rem 2rem;color:var(--text-secondary);">' +
+                '<p>Unable to load service plans. Please try again later.</p>' +
+                '<a href="/submit-ticket" style="color:var(--accent);margin-top:1rem;display:inline-block;">Contact us directly</a>' +
+                '</div>';
+        }
+
+        fetch('/api/tiers')
+            .then(function(res) {
+                if (!res.ok) throw new Error('Failed to fetch');
+                return res.json();
+            })
+            .then(function(tiers) {
+                var active = tiers.filter(function(t) { return t.is_active !== false; });
+                if (active.length === 0) { renderError(); return; }
+
+                var grid = document.getElementById('pricingGrid');
+                grid.innerHTML = '';
+                for (var i = 0; i < active.length; i++) {
+                    grid.appendChild(buildCard(active[i]));
+                }
+            })
+            .catch(function() {
+                renderError();
+            });
+    })();
+    </script>
+
+    <!-- Polsia Analytics -->
+    <script>
+    (function() {
+        var slug = 'ninekos';
+        if (!slug) return;
+        var vid = localStorage.getItem('polsia_vid');
+        if (!vid) {
+            vid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem('polsia_vid', vid);
+        }
+        new Image().src = 'https://polsia.com/api/beacon/pixel?s=' + encodeURIComponent(slug) + '&v=' + encodeURIComponent(vid);
+    })();
+    </script>
+</body>
+</html>

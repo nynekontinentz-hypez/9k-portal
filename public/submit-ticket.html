@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9K Systems - Submit a Ticket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #111827;
+            --bg-input: #0d1320;
+            --accent: #22d3ee;
+            --accent-dim: #0e7490;
+            --accent-hover: #06b6d4;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --border-focus: #22d3ee;
+            --glow: rgba(34, 211, 238, 0.15);
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+        .grain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1; }
+
+        nav { position: fixed; top: 0; width: 100%; padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: rgba(10, 14, 23, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); letter-spacing: -0.02em; text-decoration: none; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a.active { color: var(--accent); }
+
+        .page { max-width: 680px; margin: 0 auto; padding: 7rem 2rem 4rem; position: relative; z-index: 2; }
+
+        .page-badge { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--accent); background: var(--glow); border: 1px solid var(--accent-dim); padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 1.5rem; }
+        .page-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+        .page-sub { color: var(--text-secondary); font-size: 1rem; margin-bottom: 2.5rem; max-width: 520px; }
+
+        .form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.65rem 0.9rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text-primary); font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--glow); }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        .btn-submit { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.8rem; background: var(--accent); color: var(--bg-dark); border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
+        .btn-submit:hover { background: var(--accent-hover); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .success-msg { display: none; text-align: center; padding: 3rem 1.5rem; }
+        .success-msg .check { width: 64px; height: 64px; border-radius: 50%; background: rgba(16,185,129,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 1.8rem; }
+        .success-msg h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .success-msg p { color: var(--text-secondary); font-size: 0.95rem; max-width: 400px; margin: 0 auto 1.5rem; }
+        .success-msg .ticket-id { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; color: var(--accent); font-weight: 600; margin-bottom: 1.5rem; }
+        .btn-another { display: inline-flex; padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.85rem; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); font-family: inherit; cursor: pointer; transition: all 0.2s; }
+        .btn-another:hover { border-color: var(--accent-dim); color: var(--text-primary); }
+
+        .error-msg { color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; display: none; }
+
+        footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; position: relative; z-index: 2; margin-top: 3rem; }
+        .footer-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .footer-sub { font-size: 0.8rem; color: var(--text-muted); }
+
+        @media (max-width: 640px) {
+            nav { padding: 1rem 1.25rem; }
+            .page { padding: 6rem 1.25rem 3rem; }
+            .form-card { padding: 1.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+
+    <nav>
+        <a href="/" class="logo">9K<span>Systems</span></a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/services">Services</a>
+            <a href="/submit-ticket" class="active">Submit Ticket</a>
+        </div>
+    </nav>
+
+    <div class="page">
+        <div class="page-badge">IT Support Request</div>
+        <h1>Need help? Tell us what's going on.</h1>
+        <p class="page-sub">Submit a support request and we'll get back to you fast. No phone trees, no runaround.</p>
+
+        <!-- Form -->
+        <div class="form-card" id="ticketForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Your Name *</label>
+                    <input type="text" id="tName" placeholder="John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="tEmail" placeholder="john@yourcompany.com" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="tPhone" placeholder="(555) 123-4567">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="tCategory">
+                        <option value="">Select category...</option>
+                        <option value="network">Network Issues</option>
+                        <option value="email">Email / Microsoft 365</option>
+                        <option value="hardware">Hardware Problem</option>
+                        <option value="software">Software Issue</option>
+                        <option value="security">Security Concern</option>
+                        <option value="cloud">Cloud / Backup</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="tPriority">
+                    <option value="low">Low - Not urgent, can wait a day or two</option>
+                    <option value="medium" selected>Medium - Affecting work but not critical</option>
+                    <option value="high">High - Seriously impacting operations</option>
+                    <option value="critical">Critical - Systems are down</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Subject *</label>
+                <input type="text" id="tSubject" placeholder="Brief description of the issue">
+            </div>
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea id="tDescription" placeholder="Please describe the issue in detail. Include any error messages, when it started, and how many people are affected."></textarea>
+                <div class="form-hint">The more detail you provide, the faster we can help.</div>
+            </div>
+            <div class="error-msg" id="formError"></div>
+            <button class="btn-submit" id="submitBtn" onclick="submitTicket()">Submit Support Request</button>
+        </div>
+
+        <!-- Success -->
+        <div class="form-card success-msg" id="successMsg">
+            <div class="check">&#10003;</div>
+            <h2>Request Submitted</h2>
+            <p>We've received your support request and will get back to you shortly.</p>
+            <div class="ticket-id" id="ticketRef">Ticket #-</div>
+            <button class="btn-another" onclick="resetForm()">Submit Another Request</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-logo">9K Systems</div>
+        <div class="footer-sub">Florida IT Support &bull; Available 24/7</div>
+    </footer>
+
+    <script>
+    async function submitTicket() {
+        const btn = document.getElementById('submitBtn');
+        const errEl = document.getElementById('formError');
+        errEl.style.display = 'none';
+
+        const name = document.getElementById('tName').value.trim();
+        const email = document.getElementById('tEmail').value.trim();
+        const subject = document.getElementById('tSubject').value.trim();
+        const description = document.getElementById('tDescription').value.trim();
+
+        if (!name || !email || !subject || !description) {
+            errEl.textContent = 'Please fill in all required fields.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        try {
+            const res = await fetch('/api/tickets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contact_name: name,
+                    contact_email: email,
+                    contact_phone: document.getElementById('tPhone').value.trim() || null,
+                    category: document.getElementById('tCategory').value || null,
+                    priority: document.getElementById('tPriority').value,
+                    subject: subject,
+                    description: description
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Submission failed');
+
+            document.getElementById('ticketRef').textContent = 'Ticket #' + data.id;
+            document.getElementById('ticketForm').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'block';
+        } catch (e) {
+            errEl.textContent = e.message;
+            errEl.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Submit Support Request';
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('ticketForm').style.display = 'block';
+        document.getElementById('successMsg').style.display = 'none';
+        document.getElementById('tName').value = '';
+        document.getElementById('tEmail').value = '';
+        document.getElementById('tPhone').value = '';
+        document.getElementById('tCategory').value = '';
+        document.getElementById('tPriority').value = 'medium';
+        document.getElementById('tSubject').value = '';
+        document.getElementById('tDescription').value = '';
+    }
+
+    // Pre-fill subject from URL params (used by services page consultation CTA)
+    (function() {
+        var params = new URLSearchParams(window.location.search);
+        var subject = params.get('subject');
+        if (subject) {
+            document.getElementById('tSubject').value = subject;
+        }
+    })();
+    </script>
+
+    <!-- Polsia Analytics -->
+    <script>
+    (function() {
+        var slug = 'ninekos';
+        if (!slug) return;
+        var vid = localStorage.getItem('polsia_vid');
+        if (!vid) {
+            vid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            localStorage.setItem('polsia_vid', vid);
+        }
+        new Image().src = 'https://polsia.com/api/beacon/pixel?s=' + encodeURIComponent(slug) + '&v=' + encodeURIComponent(vid);
+    })();
+    </script>
+</body>
+</html>

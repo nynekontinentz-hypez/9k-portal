@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"UTF-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+  <title>Analytics — NineKOS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --green: #10b981;
+      --amber: #f59e0b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-brand span { color: var(--accent); }
+
+    .sidebar-nav a {
+      display: block;
+      padding: 10px 20px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.15s, background 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .sidebar-nav a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      background: rgba(99,102,241,0.08);
+    }
+
+    .nav-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+    .nav-section-label { padding: 6px 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      margin-left: 220px;
+      padding: 40px;
+      max-width: 1100px;
+    }
+
+    .page-header { margin-bottom: 32px; }
+    .page-title { font-size: 24px; font-weight: 700; color: var(--text); }
+    .page-subtitle { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+    /* Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 700; color: var(--text); }
+
+    /* Section */
+    .section { margin-bottom: 40px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .section-title { font-size: 16px; font-weight: 600; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+    td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    td.path { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: #a5b4fc; }
+    td.views { font-weight: 600; text-align: right; }
+    td.source { font-weight: 500; }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(16,185,129,0.12); color: var(--green); }
+    .badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+
+    /* Loading */
+    .loading { text-align: center; padding: 60px; color: var(--muted); font-size: 14px; }
+    .loading::after { content: '…'; animation: dots 1.2s infinite; }
+    @keyframes dots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+
+    /* Bar chart (CSS-only) */
+    .bar-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+    .bar-label { font-size: 13px; color: var(--muted); min-width: 120px; text-align: right; font-family: monospace; }
+    .bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
+    .bar-value { font-size: 13px; font-weight: 600; min-width: 50px; text-align: right; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 14px; }
+
+    /* Error */
+    .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 24px; }
+
+    /* Back link */
+    .back-link { font-size: 13px; color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 24px; }
+    .back-link:hover { text-decoration: underline; }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .main { padding: 20px; }
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class=\"sidebar\">
+    <div class=\"sidebar-brand\">
+      NineKOS <span>MSP</span>
+    </div>
+    <div class=\"sidebar-nav\">
+      <a href=\"/admin\">Dashboard</a>
+      <a href=\"/admin/clients\">Clients</a>
+      <a href=\"/admin/contracts\">Contracts</a>
+      <a href=\"/admin/tickets\">Tickets</a>
+      <a href=\"/admin/tiers\">Service Tiers</a>
+    </div>
+    <div class=\"nav-section\">
+      <div class=\"nav-section-label\">Tools</div>
+      <a href=\"/admin/analytics\" class=\"active\">Analytics</a>
+    </div>
+    <div class=\"nav-section\" style=\"margin-top:auto; border-top: 1px solid var(--border);\">
+      <a href=\"/admin/logout\" id=\"logout-link\" style=\"color: #f87171;\">Sign Out</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class=\"main\">
+    <a href=\"/admin\" class=\"back-link\">← Back to Dashboard</a>
+
+    <div class=\"page-header\">
+      <h1 class=\"page-title\">Page Analytics</h1>
+      <p class=\"page-subtitle\">Server-side page view tracking — no external scripts, no third-party SDKs.</p>
+    </div>
+
+    <div id=\"app\">
+      <div class=\"loading\">Loading analytics</div>
+    </div>
+  </main>
+
+  <script>
+    // ── Logout ──────────────────────────────────────────
+    document.getElementById('logout-link').addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await fetch('/admin/logout', { method: 'POST', credentials: 'include' });
+        window.location.href = '/admin/login';
+      } catch (_) {
+        window.location.href = '/admin/login';
+      }
+    });
+
+    // ── Fetch analytics ─────────────────────────────────
+    async function loadAnalytics() {
+      const app = document.getElementById('app');
+      try {
+        const res = await fetch('/api/analytics', { credentials: 'include' });
+        if (res.status === 401) {
+          window.location.href = '/admin/login';
+          return;
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        render(data);
+      } catch (err) {
+        app.innerHTML = `<div class=\"error-msg\">Failed to load analytics: ${err.message}</div>`;
+      }
+    }
+
+    // ── Render ──────────────────────────────────────────
+    function render(d) {
+      const app = document.getElementById('app');
+      const maxViews = d.topPages.length > 0 ? Math.max(...d.topPages.map(p => parseInt(p.views))) : 1;
+
+      app.innerHTML = `
+        <!-- Summary Stats -->
+        <div class=\"stats-grid\">
+          <div class=\"stat-card\">
+            <div class=\"stat-label\">Page Views — Today</div>
+            <div class=\"stat-value\">${d.today.toLocaleString()}</div>
+          </div>
+          <div class=\"stat-card\">
+            <div class=\"stat-label\">Last 7 Days</div>
+            <div class=\"stat-value\">${d.last7.toLocaleString()}</div>
+          </div>
+          <div class=\"stat-card\">
+            <div class=\"stat-label\">Last 30 Days</div>
+            <div class=\"stat-value\">${d.last30.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <!-- Top Pages -->
+        <div class=\"section\">
+          <div class=\"section-header\">
+            <h2 class=\"section-title\">Top Pages (last 30 days)</h2>
+          </div>
+          <div class=\"card\">
+            ${d.topPages.length === 0
+              ? '<div class=\"empty\">No page views recorded yet.</div>'
+              : `<table>
+                <thead>
+                  <tr>
+                    <th>Page</th>
+                    <th style=\"text-align:right\">Views</th>
+                    <th style=\"width:200px\">Relative Traffic</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${d.topPages.map(p => `
+                    <tr>
+                      <td class=\"path\">${escHtml(p.path)}</td>
+                      <td class=\"views\">${parseInt(p.views).toLocaleString()}</td>
+                      <td>
+                        <div class=\"bar-row\" style=\"padding:4px 16px\">
+                          <span class=\"bar-label\">${p.path === '/' ? '/' : truncate(p.path, 20)}</span>
+                          <div class=\"bar-track\">
+                            <div class=\"bar-fill\" style=\"width:${Math.round((parseInt(p.views)/maxViews)*100)}%\"></div>
+                          </div>
+                          <span class=\"bar-value\">${parseInt(p.views).toLocaleString()}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>`}
+          </div>
+        </div>
+
+        <!-- Referrers -->
+        <div class=\"section\">
+          <div class=\"section-header\">
+            <h2 class=\"section-title\">Traffic Sources (last 30 days)</h2>
+          </div>
+          <div class=\"card\">
+            ${d.referrers.length === 0
+              ? '<div class=\"empty\">No referrer data yet.</div>'
+              : `<table>
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th style=\"text-align:right\">Views</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${d.referrers.map(r => `
+                    <tr>
+                      <td class=\"source\">${sourceLabel(r.source)}</td>
+                      <td class=\"views\">${parseInt(r.views).toLocaleString()}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>`}
+          </div>
+        </div>
+
+        <!-- Views Over Time -->
+        <div class=\"section\">
+          <div class=\"section-header\">
+            <h2 class=\"section-title\">Daily Views (last 30 days)</h2>
+          </div>
+          <div class=\"card\">
+            ${d.viewsOverTime.length === 0
+              ? '<div class=\"empty\">No historical data yet.</div>'
+              : `<table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th style=\"text-align:right\">Views</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${d.viewsOverTime.map(r => `
+                    <tr>
+                      <td>${formatDate(r.date)}</td>
+                      <td class=\"views\">${parseInt(r.views).toLocaleString()}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>`}
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Helpers ─────────────────────────────────────────
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;');
+    }
+
+    function truncate(s, max) {
+      return s.length > max ? s.slice(0, max) + '…' : s;
+    }
+
+    function formatDate(d) {
+      const date = new Date(d);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function sourceLabel(s) {
+      const icons = {
+        '(direct)': 'Direct / None',
+        'Google': '🔍 Google',
+        'Bing': '🔍 Bing',
+        'Facebook': '📘 Facebook',
+        'LinkedIn': '💼 LinkedIn',
+        'Twitter / X': '🐦 Twitter / X',
+        'Other': '🔗 Other',
+      };
+      return icons[s] || s;
+    }
+
+    // ── Boot ─────────────────────────────────────────────
+    loadAnalytics();
+  </script>
+</body>
+</html>
