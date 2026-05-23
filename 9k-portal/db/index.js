@@ -14,10 +14,13 @@ function getDb() {
   } else {
     // Node.js 22.5+ built-in SQLite — no native compilation required
     const { DatabaseSync } = require('node:sqlite');
-    const dir = path.dirname(path.resolve(DATABASE_URL));
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    _db = new DatabaseSync(path.resolve(DATABASE_URL));
-    _db.exec(`PRAGMA journal_mode = WAL`);
+    const isMemory = DATABASE_URL === ':memory:';
+    if (!isMemory) {
+      const dir = path.dirname(path.resolve(DATABASE_URL));
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    }
+    _db = new DatabaseSync(isMemory ? ':memory:' : path.resolve(DATABASE_URL));
+    if (!isMemory) _db.exec(`PRAGMA journal_mode = WAL`);
     _db.exec(`PRAGMA foreign_keys = ON`);
   }
   return _db;

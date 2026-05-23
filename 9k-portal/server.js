@@ -72,9 +72,14 @@ app.use((err, req, res, next) => {
   res.status(500).render('error', { message: 'Internal server error.', status: 500, user: null });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n9K Systems Portal → http://localhost:${PORT}`);
-  console.log(`  Client login:  http://localhost:${PORT}/login`);
-  console.log(`  Admin login:   http://localhost:${PORT}/admin/login`);
-  console.log(`  Default admin: admin@9ksystems.net / change-me-on-first-login\n`);
-});
+// Export app for testing; only listen when run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n9K Systems Portal → http://localhost:${PORT}`);
+    console.log(`  Client login:  http://localhost:${PORT}/login`);
+    console.log(`  Admin login:   http://localhost:${PORT}/admin/login`);
+    console.log(`  Default admin: admin@9ksystems.net / change-me-on-first-login\n`);
+  });
+}
+
+module.exports = app;
