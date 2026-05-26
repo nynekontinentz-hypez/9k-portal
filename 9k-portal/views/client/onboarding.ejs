@@ -1,0 +1,59 @@
+<%- include('../partials/page-start', { title: 'Environment', user, isAdmin: false, activePath: '/client/onboarding' }) %>
+
+<div class="topbar">
+  <div class="topbar-title">Environment Details</div>
+</div>
+<div class="page">
+  <div class="card" style="max-width:640px">
+    <div class="mb-3">
+      <div class="font-medium mb-1">Your IT Environment</div>
+      <div class="text-muted text-sm">This helps us diagnose and resolve issues faster. Update it anytime.</div>
+    </div>
+    <% if (success) { %>
+    <div class="alert alert-success">Environment details updated. Thank you!</div>
+    <% } %>
+    <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/client/onboarding">
+      <div class="form-group">
+        <label>Environment type</label>
+        <select name="environment">
+          <option value="on-prem" <%= client && client.environment === 'on-prem' ? 'selected' : '' %>>On-premises only</option>
+          <option value="cloud" <%= client && client.environment === 'cloud' ? 'selected' : '' %>>Cloud only</option>
+          <option value="hybrid" <%= !client || client.environment === 'hybrid' || !client.environment ? 'selected' : '' %>>Hybrid (on-prem + cloud)</option>
+          <option value="remote" <%= client && client.environment === 'remote' ? 'selected' : '' %>>Fully remote / no office</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Approximate number of endpoints (computers, laptops, servers)</label>
+        <input type="number" name="endpoint_count" min="0" placeholder="e.g. 12" value="<%= client && client.endpoint_count || '' %>">
+      </div>
+      <div class="form-group">
+        <label class="form-check">
+          <input type="checkbox" name="uses_microsoft_365" value="1" <%= client && client.uses_microsoft_365 ? 'checked' : '' %>>
+          We use Microsoft 365
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-check">
+          <input type="checkbox" name="uses_azure_ad" value="1" <%= client && client.uses_azure_ad ? 'checked' : '' %>>
+          We use Azure Active Directory / Entra ID
+        </label>
+      </div>
+      <div class="divider"></div>
+      <div class="form-group">
+        <label>Emergency contact name</label>
+        <input type="text" name="emergency_contact_name" placeholder="Who to call for critical issues after hours" value="<%= client && client.emergency_contact_name || '' %>">
+      </div>
+      <div class="form-group">
+        <label>Emergency contact phone</label>
+        <input type="text" name="emergency_contact_phone" placeholder="+1 555 000 0000" value="<%= client && client.emergency_contact_phone || '' %>">
+      </div>
+      <button type="submit" class="btn btn-primary">Save environment details</button>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/page-end') %>

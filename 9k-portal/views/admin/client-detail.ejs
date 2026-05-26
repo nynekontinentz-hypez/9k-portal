@@ -1,0 +1,111 @@
+<%- include('../partials/page-start', { title: client.company_name, user, isAdmin: true, activePath: '/admin/clients' }) %>
+
+<div class="topbar">
+  <div class="topbar-title"><%= client.company_name %></div>
+  <div class="topbar-actions">
+    <a href="/admin/clients" class="btn btn-secondary btn-sm">← Clients</a>
+  </div>
+</div>
+<div class="page">
+  <% if (created) { %>
+  <div class="alert alert-success">Client created and invite email sent.</div>
+  <% } %>
+
+  <div class="content-grid">
+    <div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Open Tickets</div>
+          <a href="/admin/tickets?client=<%= client.id %>" class="text-sm text-accent">View all</a>
+        </div>
+        <% var openTickets = tickets.filter(function(t){ return t.status !== 'closed'; }); %>
+        <% if (openTickets.length === 0) { %>
+        <div class="card"><div class="empty-state"><div class="empty-icon">◎</div><p>No open tickets.</p></div></div>
+        <% } else { %>
+        <div class="card" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Title</th><th>Urgency</th><th>Status</th></tr></thead>
+              <tbody>
+                <% openTickets.forEach(function(t) { %>
+                <tr>
+                  <td class="text-muted">#<%= t.id %></td>
+                  <td><a href="/admin/tickets/<%= t.id %>" class="table-link"><%= t.title %></a></td>
+                  <td><span class="badge badge-<%= t.urgency %>"><%= t.urgency %></span></td>
+                  <td><span class="badge badge-<%= t.status.replace('_','-') %>"><%= t.status.replace('_',' ') %></span></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+      <div class="section">
+        <div class="section-title mb-2">Contracts</div>
+        <% if (contracts.length === 0) { %>
+        <div class="card"><div class="empty-state"><p>No contracts.</p></div></div>
+        <% } else { %>
+        <div class="card" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tier</th><th>Monthly Rate</th><th>Start</th><th>Status</th></tr></thead>
+              <tbody>
+                <% contracts.forEach(function(c) { %>
+                <tr>
+                  <td><%= c.tier_name || '—' %></td>
+                  <td>$<%= c.monthly_rate %></td>
+                  <td class="text-sm text-muted"><%= c.start_date %></td>
+                  <td><span class="badge badge-<%= c.status === 'active' ? 'closed' : 'normal' %>"><%= c.status %></span></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div>
+      <div class="card mb-3">
+        <div class="card-title mb-3">Client Info</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="detail-item"><label>Primary Contact</label><p><%= client.primary_contact_name %></p></div>
+          <div class="detail-item"><label>Email</label><p><%= client.primary_contact_email %></p></div>
+          <% if (client.phone) { %>
+          <div class="detail-item"><label>Phone</label><p><%= client.phone %></p></div>
+          <% } %>
+          <div class="detail-item"><label>Plan</label><p>
+            <% if (client.tier_name) { %>
+            <span class="badge badge-tier"><%= client.tier_name %></span>
+            <% } else { %>
+            —
+            <% } %>
+          </p></div>
+          <div class="detail-item"><label>Environment</label><p><%= client.environment || '—' %></p></div>
+          <div class="detail-item"><label>Endpoints</label><p><%= client.endpoint_count || 0 %></p></div>
+          <% if (client.uses_microsoft_365) { %>
+          <div class="detail-item"><label>M365</label><p>Active</p></div>
+          <% } %>
+          <% if (client.uses_azure_ad) { %>
+          <div class="detail-item"><label>Azure AD</label><p>Active</p></div>
+          <% } %>
+          <% if (client.emergency_contact_name) { %>
+          <div class="detail-item"><label>Emergency Contact</label><p><%= client.emergency_contact_name %><% if (client.emergency_contact_phone) { %> · <%= client.emergency_contact_phone %><% } %></p></div>
+          <% } %>
+        </div>
+      </div>
+
+      <% if (client.internal_notes) { %>
+      <div class="card" style="border-color:var(--accent)">
+        <div class="font-medium text-sm mb-1">Internal Notes</div>
+        <p class="text-sm text-muted" style="white-space:pre-wrap"><%= client.internal_notes %></p>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/page-end') %>
