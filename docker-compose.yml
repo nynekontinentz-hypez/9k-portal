@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  portal-demo:
+    build: ./portal-demo
+    ports:
+      - "3000:3000"
+    volumes:
+      - portal-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - SESSION_SECRET=change-this-to-a-random-secret
+    restart: unless-stopped
+
+  msp-dashboard:
+    build: ./msp-dashboard
+    ports:
+      - "3001:3001"
+    volumes:
+      - msp-data:/app/api/data
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=change-this-to-a-random-secret
+      - ADMIN_PASSWORD=admin9kos
+    restart: unless-stopped
+
+volumes:
+  portal-data:
+  msp-data:

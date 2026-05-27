@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MSP Admin">
+<meta name="theme-color" content="#0a0a0a">
+<title>MSP Admin Dashboard</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root {
+  --black:#080808;--surface:#111;--panel:#161616;--panel2:#1c1c1c;--border:rgba(255,255,255,0.07);--bhi:rgba(255,255,255,0.13);--gold:#E68C14;--gold2:#F5A020;--golddim:rgba(230,140,20,0.12);--goldbrd:rgba(230,140,20,0.3);--white:#F0EDE8;--dim:rgba(240,237,232,0.55);--muted:#66615C;--danger:#E84444;--success:#3DB87A;--info:#4A9EE8;--warn:#E8A020;--mono:'IBM Plex Mono',monospace;--display:'Syne',sans-serif;--body:'DM Sans',sans-serif;--safe-b:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--black);color:var(--white);font-family:var(--body)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+button{cursor:pointer;font-family:inherit;border:none}
+input,textarea,select{font-family:inherit}
+a{color:var(--gold);text-decoration:none}
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr;height:100vh;height:100dvh}
+.header{grid-column:1/-1;display:flex;align-items:center;background:var(--surface);border-bottom:0.5px solid var(--border);z-index:100;height:56px}
+.header-logo{width:240px;display:flex;align-items:center;gap:.6rem;padding:0 1.25rem;border-right:0.5px solid var(--border);flex-shrink:0}
+.logotype{font-family:var(--mono);font-size:.95rem;font-weight:700;color:var(--gold);letter-spacing:.05em}
+.badge-admin{font-family:var(--mono);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--black);background:var(--gold);padding:2px 5px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 2.5s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(230,140,20,.4)}50%{opacity:.7;box-shadow:0 0 0 5px rgba(230,140,20,0)}}
+.header-right{flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;gap:1rem}
+.header-actions{display:flex;align-items:center;gap:.75rem}
+.hdr-btn{background:none;color:var(--muted);font-size:.75rem;padding:.4rem .75rem;border:.5px solid var(--border);transition:all .2s;display:flex;align-items:center;gap:.35rem}
+.hdr-btn:hover{color:var(--white);border-color:var(--bhi)}
+.sidebar{background:var(--surface);border-right:.5px solid var(--border);overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;z-index:50;transition:transform .3s}
+.nav-section{padding:1rem 0 .5rem}
+.nav-label{font-family:var(--mono);font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:0 1.25rem;margin-bottom:.35rem}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.25rem;color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--white);background:rgba(255,255,255,.03)}
+.nav-item.active{color:var(--gold);background:var(--golddim);border-left-color:var(--gold)}
+.nav-item .badge{margin-left:auto;font-family:var(--mono);font-size:.55rem;background:var(--danger);color:#fff;padding:1px 5px;border-radius:10px;min-width:18px;text-align:center}
+.nav-item .badge.gold{background:var(--gold);color:var(--black)}
+.sidebar-footer{margin-top:auto;padding:1rem 1.25rem;border-top:.5px solid var(--border)}
+.admin-info{display:flex;align-items:center;gap:.6rem}
+.admin-avatar{width:30px;height:30px;border-radius:50%;background:var(--golddim);border:.5px solid var(--goldbrd);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.65rem;color:var(--gold)}
+.admin-name{font-size:.8rem;font-weight:500}
+.admin-role{font-family:var(--mono);font-size:.55rem;color:var(--muted)}
+.btn-logout{background:none;color:var(--muted);font-size:.7rem;margin-left:auto;padding:.3rem .5rem;border:.5px solid var(--border);transition:all .2s}
+.btn-logout:hover{color:var(--danger);border-color:var(--danger)}
+.main{overflow-y:auto;background:var(--black)}
+.view{display:none;min-height:100%}.view.active{display:block}
+.view-header{padding:1.5rem 1.5rem 1rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.view-title{font-family:var(--display);font-size:1.4rem;font-weight:800}
+.view-sub{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.15rem}
+.view-body{padding:1.25rem 1.5rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem 1.1rem;transition:all .2s;cursor:pointer;border:none}
+.btn-gold{background:var(--gold);color:var(--black)}.btn-gold:hover{background:var(--gold2)}
+.btn-outline{background:none;color:var(--white);border:.5px solid var(--bhi)}.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.btn-ghost{background:none;color:var(--muted);border:.5px solid var(--border)}.btn-ghost:hover{color:var(--white);border-color:var(--bhi)}
+.btn-danger{background:var(--danger);color:#fff}.btn-sm{padding:.4rem .75rem;font-size:.6rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.stat-card{background:var(--panel);border:.5px solid var(--border);padding:1rem 1.1rem;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.stat-card:hover::before{transform:scaleX(1)}
+.sc-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.sc-value{font-family:var(--mono);font-size:1.8rem;font-weight:700;color:var(--gold);line-height:1;margin-bottom:.2rem}
+.sc-sub{font-size:.72rem;color:var(--muted)}
+.sc-value.danger{color:var(--danger)}.sc-value.success{color:var(--success)}.sc-value.info{color:var(--info)}
+.filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.filter-chip{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .75rem;border:.5px solid var(--border);color:var(--muted);background:none;cursor:pointer;transition:all .15s}
+.filter-chip:hover{color:var(--white);border-color:var(--bhi)}
+.filter-chip.active{color:var(--gold);border-color:var(--gold);background:var(--golddim)}
+.ticket-row{border:.5px solid var(--border);background:var(--panel);padding:1rem 1.1rem;margin-bottom:.5rem;cursor:pointer;transition:border-color .2s,background .2s;display:grid;grid-template-columns:1fr auto;gap:.5rem}
+.ticket-row:hover{border-color:var(--goldbrd);background:var(--panel2)}
+.ticket-row.priority-high{border-left:2px solid var(--danger)}
+.ticket-row.priority-medium{border-left:2px solid var(--warn)}
+.ticket-row.priority-low{border-left:2px solid var(--muted)}
+.tr-id{font-family:var(--mono);font-size:.6rem;color:var(--gold);margin-bottom:.25rem}
+.tr-subject{font-size:.875rem;font-weight:500;margin-bottom:.3rem;line-height:1.3}
+.tr-meta{font-size:.75rem;color:var(--muted);display:flex;gap:.6rem;flex-wrap:wrap}
+.tr-right{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+.tr-time{font-family:var(--mono);font-size:.58rem;color:var(--muted);white-space:nowrap}
+.badge{font-family:var(--mono);font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.badge::before{content:'';width:4px;height:4px;border-radius:50%}
+.b-open{color:var(--info);background:rgba(74,158,232,.12)}.b-open::before{background:var(--info)}
+.b-progress{color:var(--gold);background:var(--golddim)}.b-progress::before{background:var(--gold)}
+.b-resolved{color:var(--success);background:rgba(61,184,122,.12)}.b-resolved::before{background:var(--success)}
+.b-closed{color:var(--muted);background:rgba(102,97,92,.1)}.b-closed::before{background:var(--muted)}
+.b-pending{color:var(--warn);background:rgba(232,160,32,.1)}.b-pending::before{background:var(--warn)}
+.b-sent{color:var(--info);background:rgba(74,158,232,.12)}.b-sent::before{background:var(--info)}
+.b-paid{color:var(--success);background:rgba(61,184,122,.12)}.b-paid::before{background:var(--success)}
+.b-overdue{color:var(--danger);background:rgba(232,68,68,.1)}.b-overdue::before{background:var(--danger)}
+.b-cancelled{color:var(--muted);background:rgba(102,97,92,.1)}.b-cancelled::before{background:var(--muted)}
+.b-high{color:var(--danger);background:rgba(232,68,68,.1)}.b-high::before{background:var(--danger)}
+.b-medium{color:var(--warn);background:rgba(232,160,32,.1)}.b-medium::before{background:var(--warn)}
+.b-low{color:var(--muted);background:rgba(102,97,92,.1)}.b-low::before{background:var(--muted)}
+.detail-panel{position:fixed;top:0;right:0;bottom:0;width:min(520px,100vw);background:var(--surface);border-left:.5px solid var(--goldbrd);z-index:300;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s;box-shadow:-8px 0 32px rgba(0,0,0,.5)}
+.detail-panel.open{transform:translateX(0)}
+.dp-header{padding:1rem 1.25rem;border-bottom:.5px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-shrink:0}
+.dp-close{background:none;color:var(--muted);font-size:1.1rem;line-height:1;padding:2px}.dp-close:hover{color:var(--white)}
+.dp-id{font-family:var(--mono);font-size:.6rem;color:var(--gold);margin-bottom:.25rem}
+.dp-subject{font-family:var(--display);font-size:1.05rem;font-weight:700;line-height:1.3}
+.dp-meta{padding:.75rem 1.25rem;border-bottom:.5px solid var(--border);display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0}
+.dp-actions{padding:.75rem 1.25rem;border-bottom:.5px solid var(--border);display:flex;gap:.5rem;flex-wrap:wrap;flex-shrink:0}
+.dp-tabs{display:flex;border-bottom:.5px solid var(--border);flex-shrink:0}
+.dp-tab{flex:1;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--muted);padding:.65rem;border-bottom:2px solid transparent;transition:all .2s}
+.dp-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.dp-tab-pane{display:none}
+.dp-tab-pane.active{display:flex;flex-direction:column;flex:1;min-height:0}
+.dp-messages{flex:1;overflow-y:auto;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:.75rem}
+.msg{padding:.75rem 1rem;font-size:.85rem;line-height:1.6;max-width:90%}
+.msg.from-client{background:var(--panel);border:.5px solid var(--border);align-self:flex-start}
+.msg.from-tech{background:var(--golddim);border:.5px solid var(--goldbrd);align-self:flex-end}
+.msg-who{font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-bottom:.3rem}
+.dp-reply{padding:.75rem 1.25rem;border-top:.5px solid var(--border);flex-shrink:0;padding-bottom:calc(.75rem + var(--safe-b))}
+.dp-reply textarea{width:100%;background:var(--panel);border:.5px solid var(--bhi);color:var(--white);padding:.6rem .75rem;font-size:.85rem;outline:none;resize:none;min-height:70px;transition:border-color .2s}
+.dp-reply textarea:focus{border-color:var(--gold)}
+.dp-reply-row{display:flex;gap:.5rem;margin-top:.5rem;flex-wrap:wrap}
+.dp-info{padding:.75rem 1.25rem;font-size:.82rem}
+.dp-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1.5rem}
+.di-label{font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.15rem}
+.di-value{font-size:.82rem}
+.notes-area{width:100%;flex:1;background:var(--panel);border:.5px solid var(--border);color:var(--white);padding:.75rem;font-size:.85rem;outline:none;resize:none}
+.notes-area:focus{border-color:var(--gold)}
+.client-row{display:grid;grid-template-columns:1fr auto;border:.5px solid var(--border);background:var(--panel);padding:.875rem 1.1rem;margin-bottom:.4rem;cursor:pointer;transition:border-color .2s}
+.client-row:hover{border-color:var(--goldbrd)}
+.cr-name{font-size:.875rem;font-weight:500}.cr-meta{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.form-group{margin-bottom:1rem}
+.form-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.4rem}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--panel);border:.5px solid var(--bhi);color:var(--white);padding:.6rem .75rem;font-size:.875rem;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;border-radius:0}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.overlay{position:fixed;inset:0;z-index:400;background:rgba(8,8,8,.85);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--panel);border:.5px solid var(--goldbrd);width:100%;max-width:480px;max-height:90vh;overflow-y:auto;transform:scale(.97);transition:transform .25s}
+.overlay.open .modal{transform:scale(1)}
+.modal-head{padding:1rem 1.25rem;border-bottom:.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{font-family:var(--display);font-size:1.1rem;font-weight:700}
+.modal-x{background:none;color:var(--muted);font-size:1.1rem}.modal-x:hover{color:var(--white)}
+.modal-body{padding:1.25rem}
+.modal-foot{padding:.75rem 1.25rem;border-top:.5px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end}
+.toast{position:fixed;bottom:calc(1rem + var(--safe-b));right:1rem;z-index:9999;background:var(--panel);border:.5px solid var(--goldbrd);padding:.75rem 1rem;max-width:300px;font-size:.8rem;transform:translateY(120px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-title{font-family:var(--mono);font-size:.6rem;color:var(--gold);margin-bottom:.2rem;letter-spacing:.08em;text-transform:uppercase}
+.login-screen{position:fixed;inset:0;z-index:999;background:var(--black);display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.login-box{width:100%;max-width:360px}
+.login-logo{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--gold);margin-bottom:.25rem}
+.login-sub{font-size:.8rem;color:var(--muted);margin-bottom:2.5rem}
+.login-box h2{font-family:var(--display);font-size:1.3rem;font-weight:800;margin-bottom:1.5rem}
+.login-err{font-size:.78rem;color:var(--danger);margin-top:.5rem;display:none}.login-err.show{display:block}
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;grid-template-rows:56px 1fr auto}
+  .header-logo{width:auto;border-right:none;padding:0 1rem}
+  .sidebar{position:fixed;top:56px;left:0;bottom:0;width:240px;z-index:200;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.6);display:none}
+  .sidebar-overlay.show{display:block}
+  .detail-panel{width:100vw}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .form-grid-2{grid-template-columns:1fr}
+  .view-body{padding:1rem}.view-header{padding:1rem}
+  .bottom-nav{display:flex;background:var(--surface);border-top:.5px solid var(--border);padding-bottom:var(--safe-b)}
+  .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:.6rem .25rem;background:none;color:var(--muted);font-family:var(--mono);font-size:.5rem;letter-spacing:.06em;text-transform:uppercase;transition:color .2s;position:relative}
+  .bn-item.active{color:var(--gold)}
+  .bn-item .bn-icon{font-size:1rem}
+  .bn-item .bn-dot{position:absolute;top:8px;right:calc(50% - 12px);width:5px;height:5px;border-radius:50%;background:var(--danger)}
+}
+@media(min-width:769px){.bottom-nav{display:none}.sidebar-overlay{display:none!important}}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">MSP</div>
+    <div class="login-sub">Admin Command Center</div>
+    <h2>Sign in</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="loginUser" value="admin" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="loginPass" autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Sign In</button>
+      <div class="login-err" id="loginErr">Invalid credentials. Try again.</div>
+    </form>
+    <div class="login-sub" style="margin-top:1rem;font-size:.65rem;">Demo: admin / admin9kos</div>
+  </div>
+</div>
+
+<div class="app" id="appShell" style="display:none;">
+  <header class="header">
+    <div class="header-logo">
+      <div class="dot"></div>
+      <span class="logotype">MSP</span>
+      <span class="badge-admin">Admin</span>
+    </div>
+    <div class="header-right">
+      <div class="header-actions">
+        <button class="hdr-btn" onclick="openNewTicketModal()">+ Ticket</button>
+        <button class="hdr-btn" onclick="logout()">Sign out</button>
+        <button class="hamburger" id="hamburger" style="display:none;flex-direction:column;gap:4px;background:none;padding:6px;" onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show')">
+          <span style="width:20px;height:1.5px;background:var(--white);display:block"></span>
+          <span style="width:20px;height:1.5px;background:var(--white);display:block"></span>
+          <span style="width:20px;height:1.5px;background:var(--white);display:block"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show')"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" data-view="dashboard"><span style="font-size:.85rem;width:18px;text-align:center">◈</span> Dashboard</div>
+      <div class="nav-item" data-view="tickets"><span style="font-size:.85rem;width:18px;text-align:center">◻</span> Tickets <span class="badge" id="navBadgeOpen">0</span></div>
+      <div class="nav-item" data-view="clients"><span style="font-size:.85rem;width:18px;text-align:center">◎</span> Clients</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Business</div>
+      <div class="nav-item" data-view="invoices"><span style="font-size:.85rem;width:18px;text-align:center">◈</span> Invoices</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Settings</div>
+      <div class="nav-item" data-view="settings"><span style="font-size:.85rem;width:18px;text-align:center">◇</span> Settings</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="admin-info">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div><div class="admin-name" id="adminName">Admin</div><div class="admin-role">MSP Dashboard</div></div>
+        <button class="btn-logout" onclick="logout()">Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main" id="main">
+    <!-- Dashboard -->
+    <div class="view active" id="view-dashboard">
+      <div class="view-header">
+        <div><div class="view-title">Dashboard</div><div class="view-sub" id="dashTimestamp">Loading...</div></div>
+        <button class="btn btn-gold btn-sm" onclick="refreshAll()">↺ Refresh</button>
+      </div>
+      <div class="view-body">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div><div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">Recent Tickets</div><div id="recentTickets"></div></div>
+          <div><div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">Activity</div><div id="activityFeed"></div></div>
+        </div>
+        <div style="margin-top:1rem"><div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">By Category</div><div id="categoryChart"></div></div>
+      </div>
+    </div>
+
+    <!-- Tickets -->
+    <div class="view" id="view-tickets">
+      <div class="view-header">
+        <div><div class="view-title">Tickets</div><div class="view-sub" id="ticketCount">Loading...</div></div>
+        <button class="btn btn-gold btn-sm" onclick="openNewTicketModal()">+ New</button>
+      </div>
+      <div class="view-body">
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="open">Open</button>
+          <button class="filter-chip" data-filter="progress">In Progress</button>
+          <button class="filter-chip" data-filter="resolved">Resolved</button>
+          <button class="filter-chip" data-filter="closed">Closed</button>
+          <button class="filter-chip" data-filter="high" style="margin-left:auto">High Priority</button>
+        </div>
+        <div id="ticketsList"></div>
+      </div>
+    </div>
+
+    <!-- Clients -->
+    <div class="view" id="view-clients">
+      <div class="view-header">
+        <div><div class="view-title">Clients</div><div class="view-sub" id="clientCount">Loading...</div></div>
+      </div>
+      <div class="view-body">
+        <div style="margin-bottom:1rem"><input class="form-input" id="clientSearch" placeholder="Search..." style="max-width:360px" /></div>
+        <div id="clientsList"></div>
+      </div>
+    </div>
+
+    <!-- Invoices -->
+    <div class="view" id="view-invoices">
+      <div class="view-header">
+        <div><div class="view-title">Invoices</div><div class="view-sub" id="invoiceCount">Loading...</div></div>
+        <button class="btn btn-gold btn-sm" onclick="showNewInvoice()">+ New</button>
+      </div>
+      <div class="view-body">
+        <div class="filter-bar" id="invoiceFilterBar">
+          <button class="filter-chip active" data-inv-filter="all">All</button>
+          <button class="filter-chip" data-inv-filter="pending">Pending</button>
+          <button class="filter-chip" data-inv-filter="sent">Sent</button>
+          <button class="filter-chip" data-inv-filter="paid">Paid</button>
+          <button class="filter-chip" data-inv-filter="overdue">Overdue</button>
+        </div>
+        <div id="invoicesList"></div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="view" id="view-settings">
+      <div class="view-header"><div class="view-title">Settings</div></div>
+      <div class="view-body" style="max-width:560px">
+        <div style="font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">API Configuration</div>
+        <div class="form-group">
+          <label class="form-label">API Base URL</label>
+          <input class="form-input" id="settingsApiUrl" placeholder="http://localhost:3001" />
+        </div>
+        <div style="display:flex;gap:.5rem;margin-bottom:2rem">
+          <button class="btn btn-gold btn-sm" onclick="saveSettings()">Save</button>
+          <button class="btn btn-outline btn-sm" onclick="testConnection()">Test Connection</button>
+        </div>
+        <div style="background:var(--panel);border:.5px solid var(--border);padding:1rem;font-size:.78rem;color:var(--muted);line-height:1.7">
+          <div style="font-family:var(--mono);font-size:.6rem;color:var(--gold);margin-bottom:.5rem">Endpoints</div>
+          <code style="font-family:var(--mono);font-size:.7rem;color:var(--dim)">POST /api/auth/login<br>GET /api/tickets<br>POST /api/tickets<br>PATCH /api/tickets/:id<br>POST /api/tickets/:id/reply<br>GET /api/clients<br>GET /api/stats</code>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="bn-item active" data-view="dashboard"><span class="bn-icon">◈</span>Home</button>
+    <button class="bn-item" data-view="tickets"><span class="bn-icon">◻</span>Tickets<span class="bn-dot" id="bnDot"></span></button>
+    <button class="bn-item" data-view="clients"><span class="bn-icon">◎</span>Clients</button>
+    <button class="bn-item" data-view="invoices"><span class="bn-icon">◈</span>Invoices</button>
+    <button class="bn-item" data-view="settings"><span class="bn-icon">◇</span>Settings</button>
+  </nav>
+</div>
+
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-header">
+    <div><div class="dp-id" id="dp-id"></div><div class="dp-subject" id="dp-subject"></div></div>
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="dp-meta" id="dp-meta"></div>
+  <div class="dp-tabs">
+    <button class="dp-tab active" data-dptab="messages">Messages</button>
+    <button class="dp-tab" data-dptab="info">Details</button>
+    <button class="dp-tab" data-dptab="notes">Notes</button>
+  </div>
+  <div class="dp-tab-pane active" id="dptab-messages">
+    <div class="dp-messages" id="dp-messages"></div>
+    <div class="dp-reply">
+      <textarea id="replyText" placeholder="Reply to client..." rows="3"></textarea>
+      <div class="dp-reply-row">
+        <button class="btn btn-gold btn-sm" onclick="sendReply()">Send Reply</button>
+        <select class="form-select" id="statusSelect" style="width:auto;font-size:.65rem;padding:.4rem 1.5rem .4rem .5rem">
+          <option value="open">Open</option><option value="progress">In Progress</option><option value="resolved">Resolved</option><option value="closed">Closed</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="updateStatus()">Set Status</button>
+      </div>
+    </div>
+  </div>
+  <div class="dp-tab-pane" id="dptab-info">
+    <div class="dp-info">
+      <div class="dp-info-grid" id="dp-info-grid"></div>
+      <div style="margin-top:1rem"><button class="btn btn-danger btn-sm" onclick="deleteTicket()">Delete Ticket</button></div>
+    </div>
+  </div>
+  <div class="dp-tab-pane" id="dptab-notes" style="padding:.75rem 1.25rem;display:flex;flex-direction:column;gap:.5rem">
+    <textarea class="notes-area" id="notesArea" placeholder="Internal notes..."></textarea>
+    <button class="btn btn-gold btn-sm" onclick="saveNotes()" style="align-self:flex-start">Save Notes</button>
+  </div>
+</div>
+
+<div class="overlay" id="modalNewTicket">
+  <div class="modal">
+    <div class="modal-head"><h3>New Ticket</h3><button class="modal-x" onclick="document.getElementById('modalNewTicket').classList.remove('open')">✕</button></div>
+    <div class="modal-body">
+      <form id="newTicketForm">
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">Name *</label><input class="form-input" name="name" required /></div>
+          <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" name="email" required /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" name="phone" /></div>
+        <div class="form-grid-2">
+          <div class="form-group"><label class="form-label">Category</label>
+            <select class="form-select" name="category"><option>Computer Repair</option><option>Networking</option><option>IT Consulting</option><option>SEO</option><option>Digital Marketing</option><option>Other / Not Sure</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Priority</label>
+            <select class="form-select" name="priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Subject *</label><input class="form-input" name="subject" required /></div>
+        <div class="form-group"><label class="form-label">Description *</label><textarea class="form-textarea" name="description" required></textarea></div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center">Create Ticket</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="toast-title" id="toastTitle"></div><div class="toast-msg" id="toastMsg"></div></div>
+
+<script>
+let API = localStorage.getItem('msp_api') || 'http://localhost:3001';
+let TOKEN = ''; let allTickets = []; let allClients = []; let allInvoices = []; let currentTicketId = null; let currentFilter = 'all'; let currentInvFilter = 'all';
+
+function toast(title, msg, dur = 3500) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), dur);
+}
+
+function relTime(iso) {
+  const d = new Date(iso), diff = Math.floor((Date.now() - d) / 60000);
+  if (diff < 1) return 'just now';
+  if (diff < 60) return diff + 'm ago';
+  if (diff < 1440) return Math.floor(diff / 60) + 'h ago';
+  return Math.floor(diff / 1440) + 'd ago';
+}
+
+function statusBadge(s) {
+  const map = { open:'Open', progress:'In Progress', resolved:'Resolved', closed:'Closed' };
+  return `<span class="badge b-${s}">${map[s] || s}</span>`;
+}
+
+function priorityBadge(p) { return `<span class="badge b-${p}">${p}</span>`; }
+
+async function apiFetch(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN;
+  try {
+    const r = await fetch(API + path, { ...opts, headers: { ...headers, ...opts.headers } });
+    if (r.status === 401) { logout(); return null; }
+    return r.json();
+  } catch { return null; }
+}
+
+// Login
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  err.classList.remove('show');
+  const res = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ username: u, password: p }) });
+  if (!res || !res.token) { err.classList.add('show'); return; }
+  TOKEN = res.token;
+  localStorage.setItem('msp_token', TOKEN);
+  document.getElementById('adminName').textContent = res.username;
+  document.getElementById('adminAvatar').textContent = res.username[0].toUpperCase();
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').style.display = 'grid';
+  refreshAll();
+});
+
+function logout() {
+  TOKEN = '';
+  localStorage.removeItem('msp_token');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appShell').style.display = 'none';
+  document.getElementById('loginPass').value = '';
+}
+
+// Refresh
+async function refreshAll() {
+  const [stats, ticketsRes, clientsRes, invoicesRes] = await Promise.all([
+    apiFetch('/api/stats'), apiFetch('/api/tickets'), apiFetch('/api/clients'), apiFetch('/api/invoices')
+  ]);
+  if (ticketsRes?.tickets) allTickets = ticketsRes.tickets;
+  if (clientsRes?.clients) allClients = clientsRes.clients;
+  if (invoicesRes?.invoices) allInvoices = invoicesRes.invoices;
+  renderAll(stats);
+}
+
+function renderAll(stats) {
+  renderStats(stats);
+  renderTickets();
+  renderClients();
+  renderInvoices();
+  document.getElementById('dashTimestamp').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+  document.getElementById('settingsApiUrl').value = API;
+}
+
+// Stats
+function renderStats(stats) {
+  if (!stats) return;
+  const open = allTickets.filter(t => t.status === 'open').length;
+  const progress = allTickets.filter(t => t.status === 'progress').length;
+  const resolved = allTickets.filter(t => t.status === 'resolved').length;
+  const high = allTickets.filter(t => t.priority === 'high' && t.status !== 'resolved' && t.status !== 'closed').length;
+  document.getElementById('statsGrid').innerHTML = [
+    { label:'Open Tickets', value:open, cls:open>3?'danger':'' },
+    { label:'In Progress', value:progress, cls:'info' },
+    { label:'Resolved', value:resolved, cls:'success' },
+    { label:'High Priority', value:high, cls:high>0?'danger':'' },
+    { label:'Clients', value:allClients.length, cls:'' },
+    { label:'Revenue', value:'$' + (stats?.invoices?.paidRevenue || 0), cls:'success' },
+    { label:'Pending', value:'$' + (stats?.invoices?.pendingRevenue || 0), cls:'' },
+    { label:'Overdue', value:stats?.invoices?.overdueCount || 0, cls:(stats?.invoices?.overdueCount||0) > 0 ? 'danger' : '' },
+  ].map(s => `<div class="stat-card"><div class="sc-label">${s.label}</div><div class="sc-value ${s.cls}">${s.value}</div></div>`).join('');
+
+  const badge = document.getElementById('navBadgeOpen');
+  badge.textContent = open; badge.style.display = open ? 'inline' : 'none';
+  document.getElementById('bnDot').style.display = high > 0 ? 'block' : 'none';
+
+  const recent = allTickets.slice(0, 4);
+  document.getElementById('recentTickets').innerHTML = recent.length ? recent.map(t =>
+    `<div class="ticket-row priority-${t.priority}" onclick="openDetail('${t.id}')" style="margin-bottom:.4rem;padding:.75rem"><div><div class="tr-id">${t.id}</div><div class="tr-subject" style="font-size:.8rem">${t.subject}</div></div><div class="tr-right">${statusBadge(t.status)}<span class="tr-time">${relTime(t.updated)}</span></div></div>`
+  ).join('') : '<div style="color:var(--muted);text-align:center;padding:2rem">No tickets</div>';
+
+  const acts = allTickets.sort((a,b)=>new Date(b.updated)-new Date(a.updated)).slice(0,5);
+  document.getElementById('activityFeed').innerHTML = acts.map(t => {
+    const txt = (t.subject||'').slice(0,60);
+    return `<div style="display:flex;gap:.75rem;padding:.5rem 0;border-bottom:.5px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--gold);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:.8rem;color:var(--dim)">${t.name}: "${txt}"</div><div style="font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:.15rem">${relTime(t.updated)}</div></div></div>`;
+  }).join('');
+
+  const cats = {};
+  allTickets.forEach(t => { cats[t.category||'Other'] = (cats[t.category||'Other']||0)+1; });
+  const maxC = Math.max(...Object.values(cats), 1);
+  document.getElementById('categoryChart').innerHTML = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,cnt]) =>
+    `<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem"><div style="font-size:.7rem;width:130px;color:var(--dim)">${cat}</div><div style="flex:1;background:var(--panel);height:5px"><div style="height:5px;background:var(--gold);width:${(cnt/maxC*100).toFixed(0)}%"></div></div><div style="font-family:var(--mono);font-size:.6rem;color:var(--gold)">${cnt}</div></div>`
+  ).join('');
+}
+
+// Tickets
+function renderTickets() {
+  let filtered = [...allTickets];
+  if (currentFilter === 'high') filtered = filtered.filter(t => t.priority === 'high' && t.status !== 'resolved' && t.status !== 'closed');
+  else if (currentFilter !== 'all') filtered = filtered.filter(t => t.status === currentFilter);
+  document.getElementById('ticketCount').textContent = filtered.length + ' tickets';
+  document.getElementById('ticketsList').innerHTML = filtered.length ? filtered.map(t =>
+    `<div class="ticket-row priority-${t.priority}" onclick="openDetail('${t.id}')">
+      <div><div class="tr-id">${t.id}</div><div class="tr-subject">${t.subject}</div><div class="tr-meta"><span>${t.name}</span><span>${t.category||''}</span></div></div>
+      <div class="tr-right">${statusBadge(t.status)}${priorityBadge(t.priority)}<span class="tr-time">${relTime(t.updated)}</span></div>
+    </div>`
+  ).join('') : '<div style="text-align:center;padding:3rem;color:var(--muted)">No tickets</div>';
+}
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentFilter = chip.dataset.filter;
+  renderTickets();
+});
+
+// Ticket Detail
+function openDetail(id) {
+  const t = allTickets.find(t => t.id === id);
+  if (!t) return;
+  currentTicketId = id;
+  document.getElementById('dp-id').textContent = t.id;
+  document.getElementById('dp-subject').textContent = t.subject;
+  document.getElementById('dp-meta').innerHTML = `${statusBadge(t.status)} ${priorityBadge(t.priority)} <span class="badge" style="color:var(--muted);background:rgba(102,97,92,.1)">${t.category||''}</span>`;
+  document.getElementById('statusSelect').value = t.status;
+  renderDetailMessages(t);
+  document.getElementById('dp-info-grid').innerHTML = [
+    ['Client', t.name], ['Email', t.email], ['Phone', t.phone||'—'],
+    ['Category', t.category||'—'], ['Priority', t.priority],
+    ['Created', new Date(t.created).toLocaleString()], ['Updated', new Date(t.updated).toLocaleString()]
+  ].map(([l,v]) => `<div><div class="di-label">${l}</div><div class="di-value">${v}</div></div>`).join('');
+  document.getElementById('notesArea').value = t.notes || '';
+  document.getElementById('detailPanel').classList.add('open');
+  document.querySelectorAll('.dp-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dp-tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelector('.dp-tab[data-dptab="messages"]').classList.add('active');
+  document.getElementById('dptab-messages').classList.add('active');
+}
+
+async function renderDetailMessages(t) {
+  if (TOKEN) {
+    const full = await apiFetch('/api/tickets/' + t.id);
+    if (full?.messages) t.messages = full.messages;
+  }
+  const el = document.getElementById('dp-messages');
+  el.innerHTML = (t.messages||[]).map(m =>
+    `<div class="msg from-${m.from_type||m.from}"><div class="msg-who">${m.author} · ${relTime(m.ts||m.created_at)}</div>${m.text}</div>`
+  ).join('');
+  setTimeout(() => el.scrollTop = el.scrollHeight, 50);
+}
+
+function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentTicketId = null; }
+
+document.querySelectorAll('.dp-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.dp-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.dp-tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('dptab-' + btn.dataset.dptab).classList.add('active');
+  });
+});
+
+async function sendReply() {
+  const text = document.getElementById('replyText').value.trim();
+  if (!text || !currentTicketId) return;
+  const t = allTickets.find(t => t.id === currentTicketId);
+  if (!t) return;
+  if (TOKEN) {
+    const res = await apiFetch('/api/tickets/' + currentTicketId + '/reply', { method:'POST', body: JSON.stringify({ text }) });
+    if (res) { const idx = allTickets.findIndex(x => x.id === currentTicketId); allTickets[idx] = res; }
+  } else {
+    t.messages.push({ id: Date.now()+'', from_type:'tech', author:'MSP Admin', text, ts: new Date().toISOString() });
+    t.updated = new Date().toISOString();
+    if (t.status === 'open') t.status = 'progress';
+  }
+  document.getElementById('replyText').value = '';
+  const updated = allTickets.find(t => t.id === currentTicketId);
+  renderDetailMessages(updated);
+  renderTickets(); toast('Reply Sent', 'Message added');
+}
+
+async function updateStatus() {
+  const status = document.getElementById('statusSelect').value;
+  if (!currentTicketId) return;
+  const t = allTickets.find(t => t.id === currentTicketId);
+  if (!t) return;
+  if (TOKEN) await apiFetch('/api/tickets/' + currentTicketId, { method:'PATCH', body: JSON.stringify({ status }) });
+  t.status = status; t.updated = new Date().toISOString();
+  document.getElementById('dp-meta').innerHTML = `${statusBadge(status)} ${priorityBadge(t.priority)} <span class="badge" style="color:var(--muted);background:rgba(102,97,92,.1)">${t.category||''}</span>`;
+  renderTickets(); toast('Status Updated', t.id + ' → ' + status);
+}
+
+async function saveNotes() {
+  const notes = document.getElementById('notesArea').value;
+  if (!currentTicketId) return;
+  const t = allTickets.find(t => t.id === currentTicketId);
+  if (t) { t.notes = notes; if (TOKEN) await apiFetch('/api/tickets/' + currentTicketId, { method:'PATCH', body: JSON.stringify({ notes }) }); }
+  toast('Notes Saved', 'Updated');
+}
+
+async function deleteTicket() {
+  if (!currentTicketId || !confirm('Delete this ticket?')) return;
+  if (TOKEN) await apiFetch('/api/tickets/' + currentTicketId, { method:'DELETE' });
+  allTickets = allTickets.filter(t => t.id !== currentTicketId);
+  closeDetail(); renderTickets(); toast('Deleted', 'Ticket removed');
+}
+
+// New Ticket
+function openNewTicketModal() { document.getElementById('modalNewTicket').classList.add('open'); }
+document.getElementById('newTicketForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
+  const btn = e.target.querySelector('[type=submit]');
+  btn.textContent = 'Creating...'; btn.disabled = true;
+  if (TOKEN) {
+    const res = await apiFetch('/api/tickets', { method:'POST', body: JSON.stringify(data) });
+    if (res?.id) allTickets.unshift(res);
+  } else {
+    allTickets.unshift({ id:'TKT-'+Date.now(), ...data, status:'open', created:new Date().toISOString(), updated:new Date().toISOString(), messages:[], notes:'' });
+  }
+  e.target.reset(); btn.textContent = 'Create Ticket'; btn.disabled = false;
+  document.getElementById('modalNewTicket').classList.remove('open');
+  renderTickets(); toast('Ticket Created', 'New ticket added');
+});
+
+// Invoices
+function renderInvoices() {
+  let filtered = [...allInvoices];
+  if (currentInvFilter !== 'all') filtered = filtered.filter(i => i.status === currentInvFilter);
+  document.getElementById('invoiceCount').textContent = filtered.length + ' invoices';
+  document.getElementById('invoicesList').innerHTML = filtered.length ? `<table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <thead><tr>${['Invoice','Client','Amount','Status','Due','Paid'].map(h => `<th style="font-family:var(--mono);font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:.5rem .6rem;border-bottom:.5px solid var(--border)">${h}</th>`).join('')}</tr></thead>
+    <tbody>${filtered.map(i => `<tr onclick="showInvoiceDetail('${i.id}')" style="cursor:pointer">
+      <td style="color:var(--gold);font-family:var(--mono);font-size:.7rem;padding:.55rem .6rem;border-bottom:.5px solid var(--border)">${i.invoice_number}</td>
+      <td style="padding:.55rem .6rem;border-bottom:.5px solid var(--border)">${i.client_name||'—'}</td>
+      <td style="font-family:var(--mono);padding:.55rem .6rem;border-bottom:.5px solid var(--border)">$${i.amount}</td>
+      <td style="padding:.55rem .6rem;border-bottom:.5px solid var(--border)"><span class="badge b-${i.status}">${i.status}</span></td>
+      <td style="font-family:var(--mono);font-size:.7rem;padding:.55rem .6rem;border-bottom:.5px solid var(--border)">${i.due_date||'—'}</td>
+      <td style="font-family:var(--mono);font-size:.7rem;padding:.55rem .6rem;border-bottom:.5px solid var(--border);color:${i.paid_at?'var(--success)':'var(--muted)'}">${i.paid_at?new Date(i.paid_at).toLocaleDateString():'—'}</td>
+    </tr>`).join('')}</tbody></table>` : '<div style="color:var(--muted);text-align:center;padding:3rem">No invoices</div>';
+}
+
+function invStatusBadge(s) { return `<span class="badge b-${s}">${s}</span>`; }
+
+document.getElementById('invoiceFilterBar').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('#invoiceFilterBar .filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentInvFilter = chip.dataset.invFilter;
+  renderInvoices();
+});
+
+function showNewInvoice() {
+  const clientOpts = allClients.map(c => `<option value="${c.email}">${c.name}${c.company?' ('+c.company+')':''}</option>`).join('');
+  const tpl = `
+    <div class="overlay open" id="modalNewInvoice">
+      <div class="modal">
+        <div class="modal-head"><h3>New Invoice</h3><button class="modal-x" onclick="document.getElementById('modalNewInvoice').classList.remove('open');this.closest('.overlay').classList.remove('open')">✕</button></div>
+        <div class="modal-body">
+          <div class="form-group"><label class="form-label">Client</label><select class="form-select" id="niClient">${clientOpts}</select></div>
+          <div class="form-grid-2">
+            <div class="form-group"><label class="form-label">Amount ($)</label><input class="form-input" id="niAmount" type="number" step="0.01" /></div>
+            <div class="form-group"><label class="form-label">Due Date</label><input class="form-input" id="niDue" type="date" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="niNotes" rows="2"></textarea></div>
+          <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="createInvoice()">Create Invoice</button>
+        </div>
+      </div>
+    </div>`;
+  const div = document.createElement('div');
+  div.innerHTML = tpl;
+  document.body.appendChild(div.firstElementChild);
+  document.getElementById('niDue').value = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+}
+
+async function createInvoice() {
+  const email = document.getElementById('niClient').value;
+  const amount = parseFloat(document.getElementById('niAmount').value);
+  if (!email || !amount) { toast('Error','Client and amount required'); return; }
+  const res = await apiFetch('/api/invoices', { method:'POST', body: JSON.stringify({ email, amount, due_date: document.getElementById('niDue').value, notes: document.getElementById('niNotes').value }) });
+  if (res) { document.getElementById('modalNewInvoice').classList.remove('open'); toast('Created','Invoice created'); refreshAll(); }
+}
+
+async function showInvoiceDetail(id) {
+  const i = await apiFetch('/api/invoices/' + id);
+  if (!i) return;
+  const tpl = `
+    <div class="overlay open" id="modalInvDetail">
+      <div class="modal">
+        <div class="modal-head"><h3>${i.invoice_number}</h3><button class="modal-x" onclick="document.getElementById('modalInvDetail').classList.remove('open');this.closest('.overlay').classList.remove('open')">✕</button></div>
+        <div class="modal-body">
+          <div style="margin-bottom:1rem;font-size:.82rem;color:var(--dim);line-height:1.8">
+            <div><strong style="color:var(--white)">Client:</strong> ${i.client_name||'—'}</div>
+            <div><strong style="color:var(--white)">Amount:</strong> <span style="font-family:var(--mono);color:var(--gold)">$${i.amount}</span></div>
+            <div><strong style="color:var(--white)">Status:</strong> ${invStatusBadge(i.status)}</div>
+            <div><strong style="color:var(--white)">Due:</strong> ${i.due_date||'—'}</div>
+            ${i.paid_at ? `<div><strong style="color:var(--white)">Paid:</strong> ${i.paid_at}${i.paid_amount?' ($'+i.paid_amount+')':''}</div>` : ''}
+            ${i.notes ? `<div><strong style="color:var(--white)">Notes:</strong> ${i.notes}</div>` : ''}
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            ${i.status !== 'paid' ? `<button class="btn btn-gold btn-sm" onclick="markInv('${i.id}','paid')">Mark Paid</button>` : ''}
+            ${i.status === 'pending' ? `<button class="btn btn-outline btn-sm" onclick="markInv('${i.id}','sent')">Mark Sent</button>` : ''}
+            ${i.status !== 'cancelled' && i.status !== 'overdue' ? `<button class="btn btn-ghost btn-sm" onclick="markInv('${i.id}','overdue')">Mark Overdue</button>` : ''}
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('modalInvDetail').classList.remove('open')">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  const div = document.createElement('div');
+  div.innerHTML = tpl;
+  document.body.appendChild(div.firstElementChild);
+}
+
+async function markInv(id, status) {
+  await apiFetch('/api/invoices/' + id, { method:'PATCH', body: JSON.stringify({ status }) });
+  document.getElementById('modalInvDetail')?.classList.remove('open');
+  toast('Updated','Invoice marked '+status);
+  refreshAll();
+}
+
+// Clients
+function renderClients(search = '') {
+  let list = allClients;
+  if (search) { const q = search.toLowerCase(); list = list.filter(c => c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.company.toLowerCase().includes(q)); }
+  document.getElementById('clientCount').textContent = list.length + ' clients';
+  document.getElementById('clientsList').innerHTML = list.length ? list.map(c =>
+    `<div class="client-row"><div><div class="cr-name">${c.name} ${c.company?`<span style="font-weight:400;color:var(--muted);font-size:.8rem">· ${c.company}</span>`:''}</div><div class="cr-meta">${c.email}${c.phone?' · '+c.phone:''}</div></div><div class="tr-right"><span class="badge" style="color:var(--gold);background:var(--golddim)">${c.ticketCount||0} tickets</span></div></div>`
+  ).join('') : '<div style="color:var(--muted);text-align:center;padding:2rem">No clients</div>';
+}
+document.getElementById('clientSearch').addEventListener('input', e => renderClients(e.target.value));
+
+// Settings
+function saveSettings() {
+  API = document.getElementById('settingsApiUrl').value.trim().replace(/\/$/,'');
+  localStorage.setItem('msp_api', API);
+  toast('Saved', 'API URL: ' + API);
+}
+async function testConnection() {
+  try {
+    const r = await fetch(API + '/api/health');
+    const d = await r.json();
+    toast('Connected', 'API online · v' + d.version);
+  } catch { toast('Failed', 'Cannot reach API'); }
+}
+
+// Navigation
+document.querySelectorAll('[data-view]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item,.bn-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + el.dataset.view).classList.add('active');
+    if (el.dataset.view !== 'dashboard') closeDetail();
+  });
+});
+
+// Restore token & auto-refresh
+const saved = localStorage.getItem('msp_token');
+if (saved) { TOKEN = saved; document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appShell').style.display = 'grid'; refreshAll(); }
+setInterval(() => { if (TOKEN) refreshAll(); }, 30000);
+</script>
+</body>
+</html>

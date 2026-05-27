@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Tickets — 9KOS</title>
+  <meta name="description" content="Open a support ticket with 9K Systems. Track your IT support requests in real time.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .tabs { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 2rem; }
+    .tab-btn {
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); background: none; border: none;
+      padding: 1rem 1.75rem; border-bottom: 2px solid transparent;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-btn:hover:not(.active) { color: var(--white); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .ticket-card {
+      border: 0.5px solid var(--border);
+      background: var(--panel);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+    }
+    .ticket-card:hover { border-color: var(--border-gold); }
+    .ticket-id { font-family: var(--mono); font-size: 0.7rem; color: var(--gold); min-width: 100px; }
+    .ticket-subject { font-size: 0.9rem; font-weight: 500; flex: 1; }
+    .ticket-meta { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); text-align: right; min-width: 100px; }
+
+    .priority-high { color: #E84444; }
+    .priority-medium { color: var(--gold-text); }
+    .priority-low { color: var(--success); }
+
+    .msg-bubble {
+      margin-bottom: 1rem; padding: 0.875rem 1.125rem;
+      border: 0.5px solid var(--border); background: var(--panel-hi);
+      font-size: 0.875rem; line-height: 1.7;
+      max-width: 85%;
+    }
+    .msg-bubble.from-tech {
+      background: var(--gold-dim); border-color: var(--border-gold);
+      margin-left: auto;
+    }
+    .msg-meta { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); margin-bottom: 0.35rem; }
+
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      border: 0.5px solid var(--border); background: var(--panel);
+    }
+    .empty-state .icon { font-size: 2rem; margin-bottom: 1rem; opacity: 0.3; }
+    .empty-state h3 { font-family: var(--display); font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 0.875rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<div class="page-header">
+  <div class="grid-bg"></div>
+  <div class="inner" style="position:relative;z-index:1; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <div class="section-label">// Support Center</div>
+      <h1>Tickets &amp; <span style="color:var(--gold-text);">Support</span></h1>
+      <p>Open a ticket, track progress, and communicate directly with your technician.</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('modal-new-ticket')">+ New Ticket</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="my-tickets">My Tickets</button>
+    <button class="tab-btn" data-tab="track">Track by ID</button>
+  </div>
+
+  <!-- MY TICKETS -->
+  <div class="tab-panel active" id="tab-my-tickets">
+    <div id="tickets-list">
+      <div class="empty-state">
+        <div class="icon">◻</div>
+        <h3>No tickets yet</h3>
+        <p>Open your first support ticket and we'll get to work.</p>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="openModal('modal-new-ticket')">Open a Ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACK -->
+  <div class="tab-panel" id="tab-track">
+    <div style="max-width:480px;">
+      <p style="color:var(--white-dim); margin-bottom:1.5rem; font-size:0.9rem;">Enter your ticket ID to look up status and updates.</p>
+      <div style="display:flex; gap:0.75rem;">
+        <input class="form-input" id="track-input" placeholder="TKT-XXXXXX" style="flex:1;" />
+        <button class="btn btn-primary" id="track-btn">Look up</button>
+      </div>
+      <div id="track-result" style="margin-top:1.5rem;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TICKET DETAIL MODAL ── -->
+<div class="modal-overlay" id="modal-ticket-detail">
+  <div class="modal" style="max-width:720px;">
+    <div class="modal-header">
+      <div>
+        <div style="font-family:var(--mono); font-size:0.65rem; color:var(--gold); margin-bottom:0.25rem;" id="detail-id">TKT-000000</div>
+        <h3 id="detail-subject">Ticket Subject</h3>
+      </div>
+      <button class="modal-close" data-close="modal-ticket-detail">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;" id="detail-meta"></div>
+      <div id="detail-messages" style="margin-bottom:1.5rem; max-height:320px; overflow-y:auto;"></div>
+      <div style="border-top:0.5px solid var(--border); padding-top:1rem;">
+        <div class="form-group">
+          <label class="form-label">Add a Reply</label>
+          <textarea class="form-textarea" id="reply-input" placeholder="Type your reply..." style="min-height:80px;"></textarea>
+        </div>
+        <button class="btn btn-primary btn-sm" id="reply-btn">Send Reply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NEW TICKET MODAL ── -->
+<div class="modal-overlay" id="modal-new-ticket">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Open New Ticket</h3>
+      <button class="modal-close" data-close="modal-new-ticket">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="new-ticket-form">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Your Name *</label>
+            <input class="form-input" name="name" required placeholder="Full name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-input" type="email" name="email" required placeholder="your@email.com" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone (optional)</label>
+          <input class="form-input" name="phone" placeholder="(407) 555-0000" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service Category *</label>
+          <select class="form-select" name="category" required>
+            <option value="">Select a category...</option>
+            <option>Computer Repair</option>
+            <option>Networking</option>
+            <option>IT Consulting</option>
+            <option>SEO</option>
+            <option>Digital Marketing</option>
+            <option>Business Strategy</option>
+            <option>Other / Not Sure</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-select" name="priority">
+            <option value="low">Low — Not urgent</option>
+            <option value="medium" selected>Medium — Needs attention soon</option>
+            <option value="high">High — Business impact</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject *</label>
+          <input class="form-input" name="subject" required placeholder="Brief description of the issue" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Describe the issue *</label>
+          <textarea class="form-textarea" name="description" required placeholder="What's happening? When did it start? What have you already tried?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Submit Ticket</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="footer-mount"></div>
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+<script>
+// ── TABS ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── RENDER TICKETS ──
+function priorityClass(p) { return 'priority-' + (p || 'medium'); }
+function statusBadge(s) {
+  const map = { open: 'Open', progress: 'In Progress', resolved: 'Resolved', closed: 'Closed' };
+  return `<span class="badge badge-${s}">${map[s] || s}</span>`;
+}
+function relDate(iso) {
+  const d = new Date(iso), now = new Date();
+  const diff = Math.floor((now - d) / 60000);
+  if (diff < 2) return 'Just now';
+  if (diff < 60) return diff + 'm ago';
+  if (diff < 1440) return Math.floor(diff/60) + 'h ago';
+  return Math.floor(diff/1440) + 'd ago';
+}
+
+function renderTicketList() {
+  const list = document.getElementById('tickets-list');
+  const tickets = TicketDB.getAll();
+  if (!tickets.length) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">◻</div><h3>No tickets yet</h3><p>Open your first support ticket and we'll get to work.</p><button class="btn btn-primary" style="margin-top:1.5rem;" onclick="openModal('modal-new-ticket')">Open a Ticket</button></div>`;
+    return;
+  }
+  list.innerHTML = tickets.map(t => `
+    <div class="ticket-card" onclick="openTicketDetail('${t.id}')">
+      <div class="ticket-id">${t.id}</div>
+      <div>
+        <div class="ticket-subject">${t.subject}</div>
+        <div style="font-size:0.75rem; color:var(--muted); margin-top:0.2rem;">${t.category} · <span class="${priorityClass(t.priority)}">${t.priority || 'medium'} priority</span></div>
+      </div>
+      <div style="display:flex; gap:0.75rem; align-items:center; margin-left:auto; flex-wrap:wrap;">
+        ${statusBadge(t.status)}
+        <span class="ticket-meta">${relDate(t.created)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── TICKET DETAIL ──
+let activeTicketId = null;
+function openTicketDetail(id) {
+  const t = TicketDB.getById(id);
+  if (!t) return;
+  activeTicketId = id;
+  document.getElementById('detail-id').textContent = t.id;
+  document.getElementById('detail-subject').textContent = t.subject;
+  document.getElementById('detail-meta').innerHTML = `
+    ${statusBadge(t.status)}
+    <span class="badge" style="color:var(--muted); background:rgba(122,117,112,0.1);">${t.category}</span>
+    <span class="badge" style="color:var(--muted); background:rgba(122,117,112,0.1);">${t.name} · ${t.email}</span>
+    <span class="badge" style="color:var(--muted); background:rgba(122,117,112,0.1);">${relDate(t.created)}</span>
+  `;
+  renderMessages(t);
+  openModal('modal-ticket-detail');
+}
+
+function renderMessages(t) {
+  const el = document.getElementById('detail-messages');
+  el.innerHTML = (t.messages || []).map(m => `
+    <div class="msg-bubble ${m.from === 'tech' ? 'from-tech' : ''}">
+      <div class="msg-meta">${m.from === 'tech' ? '9K Systems Technician' : t.name} · ${relDate(m.ts)}</div>
+      ${m.text}
+    </div>
+  `).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+document.getElementById('reply-btn').addEventListener('click', () => {
+  const input = document.getElementById('reply-input');
+  const text = input.value.trim();
+  if (!text || !activeTicketId) return;
+  const t = TicketDB.getById(activeTicketId);
+  if (!t) return;
+  t.messages.push({ from: 'client', text, ts: new Date().toISOString() });
+  TicketDB.update(activeTicketId, { messages: t.messages, status: t.status === 'resolved' ? 'open' : t.status });
+  input.value = '';
+  renderMessages(TicketDB.getById(activeTicketId));
+  showToast('Reply Sent', 'Your message has been added to the ticket.');
+});
+
+// ── NEW TICKET FORM ──
+document.getElementById('new-ticket-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
+  const ticket = TicketDB.add(data);
+  e.target.reset();
+  closeModal('modal-new-ticket');
+  renderTicketList();
+  showToast('Ticket Created', `Your ticket ${ticket.id} has been submitted. We'll be in touch shortly.`);
+});
+
+// ── TRACK ──
+document.getElementById('track-btn').addEventListener('click', () => {
+  const id = document.getElementById('track-input').value.trim().toUpperCase();
+  const res = document.getElementById('track-result');
+  const t = TicketDB.getById(id);
+  if (!t) {
+    res.innerHTML = `<div style="padding:1rem; border:0.5px solid var(--danger); color:var(--danger); font-size:0.875rem; font-family:var(--mono);">Ticket "${id}" not found. Check the ID and try again.</div>`;
+    return;
+  }
+  res.innerHTML = `<div class="ticket-card" onclick="openTicketDetail('${t.id}')">
+    <div class="ticket-id">${t.id}</div>
+    <div><div class="ticket-subject">${t.subject}</div><div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${t.category}</div></div>
+    <div style="margin-left:auto;">${statusBadge(t.status)}</div>
+  </div><p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem;">Click the ticket to view details and add replies.</p>`;
+});
+document.getElementById('track-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('track-btn').click(); });
+
+// ── SEED DEMO TICKET ──
+function seedDemo() {
+  if (!TicketDB.getAll().length) {
+    const t = TicketDB.add({ name: 'Demo User', email: 'demo@example.com', phone: '', category: 'Computer Repair', priority: 'medium', subject: 'Laptop running slow after Windows update', description: 'My laptop has been extremely slow since the last Windows update. Takes 5+ minutes to boot and apps keep freezing.' });
+    t.messages.push({ from: 'tech', text: 'Hi! I\'ve reviewed your ticket. This sounds like a common issue with a specific Windows update. I can remote in to diagnose or you can drop it off. What works best for you?', ts: new Date(Date.now() - 300000).toISOString() });
+    TicketDB.update(t.id, { status: 'progress', messages: t.messages });
+  }
+}
+seedDemo();
+renderTicketList();
+</script>
+</body>
+</html>

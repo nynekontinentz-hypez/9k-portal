@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services — 9KOS</title>
+  <meta name="description" content="Full-spectrum IT services: computer repair, networking, IT consulting, SEO, digital marketing, and business strategy in Orlando, FL.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .svc-block { border-top: 0.5px solid var(--border); padding: 4rem 0; }
+    .svc-grid { display: grid; grid-template-columns: 1fr 1.8fr; gap: 4rem; align-items: start; }
+    .svc-num { font-family: var(--mono); font-size: 4rem; font-weight: 700; color: var(--gold); opacity: 0.15; line-height: 1; margin-bottom: 0.5rem; }
+    .svc-title { font-family: var(--display); font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .svc-tag { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); background: var(--gold-dim); padding: 0.25rem 0.75rem; display: inline-block; margin-bottom: 1rem; }
+    .svc-includes { margin-top: 1.5rem; }
+    .svc-includes h4 { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .svc-includes ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .svc-includes ul li { font-size: 0.875rem; color: var(--white-dim); padding-left: 1rem; position: relative; }
+    .svc-includes ul li::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-size: 0.8rem; }
+    .pricing-note { margin-top: 2rem; padding: 1.25rem; background: var(--gold-dim); border-left: 2px solid var(--gold); font-size: 0.85rem; color: var(--white-dim); }
+    @media (max-width:700px) { .svc-grid { grid-template-columns: 1fr; gap: 1.5rem; } }
+  </style>
+</head>
+<body>
+<div id="nav-mount"></div>
+
+<div class="page-header">
+  <div class="grid-bg"></div>
+  <div class="inner" style="position:relative;z-index:1;">
+    <div class="section-label">// Services</div>
+    <h1>The full <span style="color:var(--gold-text);">spectrum</span></h1>
+    <p>Every service your business needs. One provider. No technology need gets bounced to someone else.</p>
+  </div>
+</div>
+
+<div class="section">
+
+  <!-- 01 Computer Repair -->
+  <div class="svc-block" id="repair">
+    <div class="svc-grid reveal">
+      <div>
+        <div class="svc-num">01</div>
+        <div class="svc-tag">Hardware</div>
+        <div class="svc-title">Computer Repair</div>
+        <p style="font-size:0.875rem; color:var(--muted);">Desktop · Laptop · Workstation</p>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.href='tickets.html'">Book a repair</button>
+      </div>
+      <div>
+        <p style="color:var(--white-dim); line-height:1.8; margin-bottom:1.5rem;">From the device on your desk to the server in your closet — if it has a power button, we can diagnose, repair, or upgrade it. No appointment-only nonsense. No "we'll have to send it out."</p>
+        <div class="svc-includes">
+          <h4>What's included</h4>
+          <ul>
+            <li>Hardware diagnostics and component-level repair</li>
+            <li>Virus, malware, and ransomware removal</li>
+            <li>Operating system reinstall and data recovery</li>
+            <li>RAM, SSD, and storage upgrades</li>
+            <li>Laptop screen and keyboard replacement</li>
+            <li>Performance tuning and optimization</li>
+            <li>New machine setup and data migration</li>
+          </ul>
+        </div>
+        <div class="pricing-note">Diagnostic fees waived when you proceed with repair. Most repairs completed same day or next day.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 Networking -->
+  <div class="svc-block" id="networking">
+    <div class="svc-grid reveal">
+      <div>
+        <div class="svc-num">02</div>
+        <div class="svc-tag">Infrastructure</div>
+        <div class="svc-title">Networking</div>
+        <p style="font-size:0.875rem; color:var(--muted);">LAN · WAN · Wi-Fi · Security</p>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.href='tickets.html'">Get a quote</button>
+      </div>
+      <div>
+        <p style="color:var(--white-dim); line-height:1.8; margin-bottom:1.5rem;">Your network is the foundation of everything. Whether you need a home office setup or a multi-location business network, we design, build, and secure it correctly the first time.</p>
+        <div class="svc-includes">
+          <h4>What's included</h4>
+          <ul>
+            <li>Network design and structured cabling</li>
+            <li>Wi-Fi coverage mapping and access point deployment</li>
+            <li>Router, switch, and firewall configuration</li>
+            <li>VPN setup for remote access</li>
+            <li>Network security audits and hardening</li>
+            <li>Guest network and VLAN segmentation</li>
+            <li>Ongoing monitoring and troubleshooting</li>
+          </ul>
+        </div>
+        <div class="pricing-note">Free initial site assessment for all new networking projects. Quoted flat-rate, no hourly surprises.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 IT Consulting -->
+  <div class="svc-block" id="consulting">
+    <div class="svc-grid reveal">
+      <div>
+        <div class="svc-num">03</div>
+        <div class="svc-tag">Strategy</div>
+        <div class="svc-title">IT Consulting</div>
+        <p style="font-size:0.875rem; color:var(--muted);">Planning · Procurement · Roadmaps</p>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.href='contact.html'">Schedule consult</button>
+      </div>
+      <div>
+        <p style="color:var(--white-dim); line-height:1.8; margin-bottom:1.5rem;">Most small businesses don't need a full-time CTO. They need someone who can think strategically about technology and help them make decisions that scale. That's where we come in.</p>
+        <div class="svc-includes">
+          <h4>What's included</h4>
+          <ul>
+            <li>Technology stack assessment and audit</li>
+            <li>Vendor selection and contract review</li>
+            <li>IT roadmap development (1–3 year)</li>
+            <li>Cloud migration planning and execution</li>
+            <li>Backup and disaster recovery strategy</li>
+            <li>Software and tool recommendations</li>
+            <li>Fractional CTO advisory (monthly retainer)</li>
+          </ul>
+        </div>
+        <div class="pricing-note">Available as one-time project or ongoing monthly advisory retainer. Contact us for pricing.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 SEO -->
+  <div class="svc-block" id="seo">
+    <div class="svc-grid reveal">
+      <div>
+        <div class="svc-num">04</div>
+        <div class="svc-tag">Digital</div>
+        <div class="svc-title">SEO</div>
+        <p style="font-size:0.875rem; color:var(--muted);">Local · Technical · Content</p>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.href='contact.html'">Get a site audit</button>
+      </div>
+      <div>
+        <p style="color:var(--white-dim); line-height:1.8; margin-bottom:1.5rem;">Showing up in search results isn't magic — it's technical discipline and consistent effort. We handle the full SEO picture, from crawl errors to content strategy, for Orlando businesses who want to be found.</p>
+        <div class="svc-includes">
+          <h4>What's included</h4>
+          <ul>
+            <li>Technical SEO audit (site speed, crawlability, schema)</li>
+            <li>Keyword research and competitive gap analysis</li>
+            <li>On-page optimization and metadata</li>
+            <li>Google Business Profile management</li>
+            <li>Local SEO and citation building</li>
+            <li>Link acquisition strategy</li>
+            <li>Monthly reporting with plain-English summaries</li>
+          </ul>
+        </div>
+        <div class="pricing-note">All SEO engagements begin with a comprehensive site audit. Ongoing packages available monthly.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 Digital Marketing -->
+  <div class="svc-block" id="marketing">
+    <div class="svc-grid reveal">
+      <div>
+        <div class="svc-num">05</div>
+        <div class="svc-tag">Growth</div>
+        <div class="svc-title">Digital Marketing</div>
+        <p style="font-size:0.875rem; color:var(--muted);">Ads · Social · Analytics</p>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.href='contact.html'">Start a campaign</button>
+      </div>
+      <div>
+        <p style="color:var(--white-dim); line-height:1.8; margin-bottom:1.5rem;">Marketing that actually makes sense to a small business owner. No agency jargon, no bloated retainers for things you don't need. Just targeted digital campaigns tied directly to your business goals.</p>
+        <div class="svc-includes">
+          <h4>What's included</h4>
+          <ul>
+            <li>Google Ads and Microsoft Ads management</li>
+            <li>Meta (Facebook/Instagram) advertising</li>
+            <li>Campaign strategy and audience targeting</li>
+            <li>Ad creative and copywriting</li>
+            <li>Conversion tracking and attribution setup</li>
+            <li>A/B testing and optimization</li>
+            <li>Monthly performance reporting</li>
+          </ul>
+        </div>
+        <div class="pricing-note">Management fee charged as a flat monthly rate, not a % of ad spend. Your budget stays yours.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 Business Strategy -->
+  <div class="svc-block" id="strategy">
+    <div class="svc-grid reveal">
+      <div>
+        <div class="svc-num">06</div>
+        <div class="svc-tag">Advisory</div>
+        <div class="svc-title">Business Strategy</div>
+        <p style="font-size:0.875rem; color:var(--muted);">Goals · Systems · Growth</p>
+        <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="location.href='contact.html'">Book a strategy session</button>
+      </div>
+      <div>
+        <p style="color:var(--white-dim); line-height:1.8; margin-bottom:1.5rem;">Technology is a tool, not a goal. We help small business owners think through the intersection of their business objectives and their technology decisions — so every investment serves a purpose.</p>
+        <div class="svc-includes">
+          <h4>What's included</h4>
+          <ul>
+            <li>Business goal alignment and technology mapping</li>
+            <li>Process analysis and automation opportunities</li>
+            <li>Tool consolidation and cost reduction</li>
+            <li>Revenue-aligned technology prioritization</li>
+            <li>Growth planning and scalability review</li>
+            <li>Competitive technology benchmarking</li>
+            <li>Quarterly business review sessions</li>
+          </ul>
+        </div>
+        <div class="pricing-note">Strategy sessions available as standalone engagements or bundled with other services.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="border-top:0.5px solid var(--border); padding-top:4rem; text-align:center;" class="reveal">
+    <div class="section-label" style="justify-content:center; display:flex;">// Not sure what you need?</div>
+    <h2 class="section-title">Let's figure it out together</h2>
+    <p style="color:var(--white-dim); max-width:480px; margin:0 auto 2rem; font-size:0.95rem; line-height:1.7;">Describe what's going wrong — or what you want to improve — and we'll map out the right approach. No commitment required.</p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="location.href='contact.html'">Talk to us</button>
+      <button class="btn btn-ghost" onclick="location.href='tickets.html'">Open a ticket</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="footer-mount"></div>
+<script src="js/layout.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

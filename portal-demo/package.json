@@ -1,0 +1,17 @@
+{
+  "name": "9k-portal-demo",
+  "version": "1.0.0",
+  "description": "9K Systems MSP Client Portal — standalone SQLite demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node db/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "express-session": "^1.19.0",
+    "sql.js": "^1.10.0",
+    "uuid": "^9.0.0"
+  }
+}

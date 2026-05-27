@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>9K Portal — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808; --surface: #111; --panel: #161616; --panel2: #1c1c1c;
+  --border: rgba(255,255,255,0.07); --bhi: rgba(255,255,255,0.13);
+  --gold: #E68C14; --gold2: #F5A020; --golddim: rgba(230,140,20,0.12); --goldbrd: rgba(230,140,20,0.3);
+  --white: #F0EDE8; --dim: rgba(240,237,232,0.55); --muted: #66615C;
+  --danger: #E84444; --success: #3DB87A; --info: #4A9EE8; --warn: #E8A020;
+  --mono: 'IBM Plex Mono', monospace; --display: 'Syne', sans-serif; --body: 'DM Sans', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; overflow:hidden; background:var(--black); color:var(--white); font-family:var(--body); }
+::-webkit-scrollbar { width:3px; } ::-webkit-scrollbar-thumb { background:var(--gold); border-radius:2px; }
+input, textarea, select { font-family:inherit; background:var(--panel); border:0.5px solid var(--bhi); color:var(--white); padding:0.5rem 0.6rem; font-size:0.85rem; outline:none; border-radius:0; }
+input:focus, textarea:focus, select:focus { border-color:var(--gold); }
+button { cursor:pointer; font-family:var(--mono); border:none; padding:0.5rem 1rem; font-size:0.6rem; letter-spacing:.08em; text-transform:uppercase; transition:all .2s; }
+.btn-gold { background:var(--gold); color:var(--black); } .btn-gold:hover { background:var(--gold2); }
+.btn-outline { background:none; color:var(--white); border:0.5px solid var(--bhi); } .btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+.btn-ghost { background:none; color:var(--muted); border:0.5px solid var(--border); } .btn-ghost:hover { color:var(--white); }
+.btn-sm { padding:0.4rem 0.75rem; font-size:0.55rem; }
+.btn-danger { background:var(--danger); color:#fff; } .btn-danger:hover { opacity:.85; }
+select { -webkit-appearance:none; appearance:none; border-radius:0; }
+table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+th { font-family:var(--mono); font-size:0.5rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); text-align:left; padding:0.5rem 0.6rem; border-bottom:0.5px solid var(--border); }
+td { padding:0.55rem 0.6rem; border-bottom:0.5px solid var(--border); }
+tr:hover td { background:var(--panel2); }
+.layout { display:grid; grid-template-columns:220px 1fr; grid-template-rows:52px 1fr; height:100vh; }
+.header { grid-column:1/-1; display:flex; align-items:center; gap:1rem; padding:0 1.25rem; background:var(--surface); border-bottom:0.5px solid var(--border); }
+.header-logo { font-family:var(--mono); font-weight:700; color:var(--gold); }
+.header-logo span { font-size:0.5rem; color:var(--black); background:var(--gold); padding:2px 5px; margin-left:6px; vertical-align:middle; }
+.header-right { margin-left:auto; display:flex; align-items:center; gap:0.75rem; }
+.header-right .email { font-size:0.72rem; color:var(--muted); }
+.sidebar { background:var(--surface); border-right:0.5px solid var(--border); overflow-y:auto; padding:0.75rem 0; }
+.nav-item { display:flex; align-items:center; gap:0.6rem; padding:0.65rem 1.25rem; color:var(--muted); font-size:0.8rem; cursor:pointer; border-left:2px solid transparent; transition:all .15s; }
+.nav-item:hover { color:var(--white); background:rgba(255,255,255,.03); }
+.nav-item.active { color:var(--gold); background:var(--golddim); border-left-color:var(--gold); }
+.nav-item .badge { margin-left:auto; font-size:0.5rem; background:var(--danger); color:#fff; padding:1px 5px; border-radius:10px; min-width:16px; text-align:center; }
+.nav-label { font-family:var(--mono); font-size:0.5rem; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); padding:1rem 1.25rem 0.25rem; }
+.main { overflow-y:auto; }
+.view { display:none; padding:1.5rem; } .view.active { display:block; }
+.view-title { font-family:var(--display); font-size:1.3rem; font-weight:800; margin-bottom:1rem; }
+.view-actions { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:0.75rem; margin-bottom:1.5rem; }
+.stat-card { background:var(--panel); border:0.5px solid var(--border); padding:1rem; }
+.sc-label { font-family:var(--mono); font-size:0.5rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
+.sc-value { font-family:var(--mono); font-size:1.6rem; font-weight:700; color:var(--gold); }
+.sc-value.danger { color:var(--danger); } .sc-value.success { color:var(--success); } .sc-value.info { color:var(--info); }
+.filter-bar { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+.filter-chip { padding:0.3rem 0.6rem; font-size:0.55rem; background:none; color:var(--muted); border:0.5px solid var(--border); cursor:pointer; }
+.filter-chip.active { color:var(--gold); border-color:var(--gold); background:var(--golddim); }
+.ticket-row { display:grid; grid-template-columns:1fr auto; gap:0.5rem; border:0.5px solid var(--border); background:var(--panel); padding:0.75rem 1rem; margin-bottom:0.4rem; cursor:pointer; transition:border-color .15s; position:relative; }
+.ticket-row:hover { border-color:var(--goldbrd); }
+.ticket-row.priority-high { border-left:2px solid var(--danger); }
+.ticket-row.priority-medium { border-left:2px solid var(--warn); }
+.ticket-row.priority-low { border-left:2px solid var(--muted); }
+.tr-id { font-family:var(--mono); font-size:0.55rem; color:var(--gold); }
+.tr-subject { font-size:0.85rem; font-weight:500; }
+.tr-meta { font-size:0.72rem; color:var(--muted); margin-top:0.2rem; display:flex; gap:0.75rem; }
+.tr-right { text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; }
+.badge { font-family:var(--mono); font-size:0.5rem; letter-spacing:.08em; text-transform:uppercase; padding:2px 6px; display:inline-flex; align-items:center; gap:4px; }
+.badge::before { content:''; width:4px; height:4px; border-radius:50%; }
+.b-open { color:var(--info); background:rgba(74,158,232,.12); } .b-open::before { background:var(--info); }
+.b-progress { color:var(--gold); background:var(--golddim); } .b-progress::before { background:var(--gold); }
+.b-resolved { color:var(--success); background:rgba(61,184,122,.12); } .b-resolved::before { background:var(--success); }
+.b-closed { color:var(--muted); background:rgba(102,97,92,.1); } .b-closed::before { background:var(--muted); }
+.b-high { color:var(--danger); background:rgba(232,68,68,.1); } .b-high::before { background:var(--danger); }
+.b-medium { color:var(--warn); background:rgba(232,160,32,.1); } .b-medium::before { background:var(--warn); }
+.b-low { color:var(--muted); background:rgba(102,97,92,.1); } .b-low::before { background:var(--muted); }
+.b-pending { color:var(--warn); background:rgba(232,160,32,.1); } .b-pending::before { background:var(--warn); }
+.b-sent { color:var(--info); background:rgba(74,158,232,.12); } .b-sent::before { background:var(--info); }
+.b-paid { color:var(--success); background:rgba(61,184,122,.12); } .b-paid::before { background:var(--success); }
+.b-overdue { color:var(--danger); background:rgba(232,68,68,.1); } .b-overdue::before { background:var(--danger); }
+.b-cancelled { color:var(--muted); background:rgba(102,97,92,.1); } .b-cancelled::before { background:var(--muted); }
+.b-draft { color:var(--muted); background:rgba(102,97,92,.1); } .b-draft::before { background:var(--muted); }
+.b-active { color:var(--success); background:rgba(61,184,122,.12); } .b-active::before { background:var(--success); }
+.client-row { display:grid; grid-template-columns:1fr auto; border:0.5px solid var(--border); background:var(--panel); padding:0.75rem 1rem; margin-bottom:0.35rem; cursor:pointer; }
+.client-row:hover { border-color:var(--goldbrd); }
+.cr-name { font-size:0.85rem; font-weight:500; }
+.cr-meta { font-size:0.72rem; color:var(--muted); margin-top:0.15rem; }
+.toast { position:fixed; bottom:1rem; right:1rem; background:var(--panel); border:0.5px solid var(--goldbrd); padding:0.75rem 1rem; max-width:300px; font-size:0.8rem; transform:translateY(120px); opacity:0; transition:all .3s; z-index:999; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast-title { font-family:var(--mono); font-size:0.55rem; color:var(--gold); text-transform:uppercase; margin-bottom:0.2rem; }
+.form-group { margin-bottom:0.75rem; }
+.form-group label { font-family:var(--mono); font-size:0.5rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:0.25rem; }
+.form-group input, .form-group select, .form-group textarea { width:100%; }
+.form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.activity-item { display:flex; gap:0.65rem; padding:0.65rem 0; border-bottom:0.5px solid var(--border); align-items:flex-start; }
+.activity-dot { width:6px; height:6px; border-radius:50%; margin-top:6px; flex-shrink:0; }
+.activity-body { flex:1; font-size:0.8rem; line-height:1.4; }
+.activity-time { font-family:var(--mono); font-size:0.5rem; color:var(--muted); white-space:nowrap; }
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:1000; align-items:center; justify-content:center; }
+.modal-overlay.show { display:flex; }
+.modal { background:var(--panel); border:0.5px solid var(--border); max-width:640px; width:90%; max-height:80vh; overflow-y:auto; padding:1.5rem; }
+.modal-title { font-family:var(--display); font-size:1.1rem; font-weight:700; margin-bottom:1rem; }
+.modal-actions { display:flex; gap:0.5rem; margin-top:1rem; }
+@media (max-width:640px) {
+  .layout { grid-template-columns:1fr; }
+  .sidebar { display:none; }
+  .form-grid-2 { grid-template-columns:1fr; }
+  .view { padding:1rem; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <header class="header">
+    <div class="header-logo">9K PORTAL <span>Admin</span></div>
+    <div class="header-right">
+      <span class="email" id="adminEmail"></span>
+      <button class="btn-ghost btn-sm" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active" data-view="dashboard">◈ Dashboard</div>
+    <div class="nav-item" data-view="tickets">◻ Tickets <span class="badge" id="openBadge" style="display:none">0</span></div>
+    <div class="nav-item" data-view="clients">◎ Clients</div>
+    <div class="nav-label">Business</div>
+    <div class="nav-item" data-view="invoices">◈ Invoices</div>
+    <div class="nav-item" data-view="contracts">◈ Contracts</div>
+    <div class="nav-item" data-view="tiers">◈ Tiers</div>
+    <div class="nav-label">Insights</div>
+    <div class="nav-item" data-view="analytics">◈ Analytics</div>
+  </nav>
+  <main class="main">
+
+    <!-- Dashboard -->
+    <div class="view active" id="view-dashboard">
+      <div class="view-title">Dashboard</div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div><div class="view-title" style="font-size:0.9rem; margin-bottom:0.5rem;">Recent Tickets</div><div id="recentTickets"></div></div>
+        <div><div class="view-title" style="font-size:0.9rem; margin-bottom:0.5rem;">Activity</div><div id="activityFeed"></div></div>
+      </div>
+    </div>
+
+    <!-- Tickets -->
+    <div class="view" id="view-tickets">
+      <div class="view-title">Tickets</div>
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="open">Open</button>
+        <button class="filter-chip" data-filter="progress">In Progress</button>
+        <button class="filter-chip" data-filter="resolved">Resolved</button>
+        <button class="filter-chip" data-filter="high" style="margin-left:auto;">High</button>
+      </div>
+      <div id="ticketsList"></div>
+    </div>
+
+    <!-- Clients -->
+    <div class="view" id="view-clients">
+      <div class="view-actions">
+        <div class="view-title" style="margin-bottom:0;">Clients</div>
+        <button class="btn-gold btn-sm" onclick="showCreateClient()">+ Add</button>
+      </div>
+      <div style="margin-bottom:0.75rem;"><input id="clientSearch" placeholder="Search clients..." style="max-width:300px;" /></div>
+      <div id="clientsList"></div>
+    </div>
+
+    <!-- Invoices -->
+    <div class="view" id="view-invoices">
+      <div class="view-actions">
+        <div class="view-title" style="margin-bottom:0;">Invoices</div>
+        <button class="btn-gold btn-sm" onclick="showCreateInvoice()">+ New</button>
+      </div>
+      <div class="filter-bar" id="invoiceFilterBar">
+        <button class="filter-chip active" data-inv-filter="all">All</button>
+        <button class="filter-chip" data-inv-filter="pending">Pending</button>
+        <button class="filter-chip" data-inv-filter="sent">Sent</button>
+        <button class="filter-chip" data-inv-filter="paid">Paid</button>
+        <button class="filter-chip" data-inv-filter="overdue">Overdue</button>
+      </div>
+      <div id="invoicesList"></div>
+    </div>
+
+    <!-- Contracts -->
+    <div class="view" id="view-contracts">
+      <div class="view-actions">
+        <div class="view-title" style="margin-bottom:0;">Contracts</div>
+        <button class="btn-gold btn-sm" onclick="showCreateContract()">+ New</button>
+      </div>
+      <div id="contractsList"></div>
+    </div>
+
+    <!-- Tiers -->
+    <div class="view" id="view-tiers">
+      <div class="view-actions">
+        <div class="view-title" style="margin-bottom:0;">Service Tiers</div>
+        <button class="btn-gold btn-sm" onclick="showCreateTier()">+ New</button>
+      </div>
+      <div id="tiersList"></div>
+    </div>
+
+    <!-- Analytics -->
+    <div class="view" id="view-analytics">
+      <div class="view-title">Analytics</div>
+      <div class="stats-grid" id="analyticsStats"></div>
+      <div style="display:grid; grid-template-columns:1fr; gap:1rem;">
+        <div><div class="view-title" style="font-size:0.9rem;">Top Pages</div><div id="topPages"></div></div>
+        <div><div class="view-title" style="font-size:0.9rem;">Views (30d)</div><div id="viewsOverTime"></div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<div class="toast" id="toast"><div class="toast-title" id="toastTitle"></div><div id="toastMsg"></div></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+let allTickets = []; let allClients = []; let allInvoices = [];
+let allContracts = []; let allTiers = [];
+let currentFilter = 'all'; let currentInvFilter = 'all';
+
+function toast(title, msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastTitle').textContent = title;
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function relTime(iso) {
+  const d = new Date(iso), diff = Math.floor((Date.now() - d) / 60000);
+  if (diff < 1) return 'just now';
+  if (diff < 60) return diff + 'm ago';
+  if (diff < 1440) return Math.floor(diff / 60) + 'h ago';
+  return Math.floor(diff / 1440) + 'd ago';
+}
+
+function statusBadge(s) {
+  const map = { open:'Open', progress:'In Progress', resolved:'Resolved', closed:'Closed' };
+  return `<span class="badge b-${s}">${map[s]||s}</span>`;
+}
+
+function priorityBadge(p) { return `<span class="badge b-${p}">${p}</span>`; }
+
+function invStatusBadge(s) {
+  return `<span class="badge b-${s}">${s}</span>`;
+}
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, { ...opts, headers: { 'Content-Type': 'application/json', ...opts.headers }, credentials: 'include' });
+  if (r.status === 401) { window.location.href = '/admin/login'; return null; }
+  return r.json();
+}
+
+function modal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+async function checkAuth() {
+  const stats = await api('/api/stats');
+  if (!stats) return;
+  document.getElementById('adminEmail').textContent = 'admin@9ksystems.net';
+  await refreshAll();
+}
+
+async function refreshAll() {
+  const [stats, tickets, clients, invoices, contracts, tiers] = await Promise.all([
+    api('/api/stats'), api('/api/tickets'), api('/api/clients'),
+    api('/api/invoices'), api('/api/contracts'), api('/api/tiers')
+  ]);
+  if (tickets) allTickets = tickets;
+  if (clients) allClients = clients;
+  if (invoices) allInvoices = invoices;
+  if (contracts) allContracts = contracts;
+  if (tiers) allTiers = tiers;
+  renderAll(stats);
+}
+
+function renderAll(stats) {
+  renderStats(stats);
+  renderTickets();
+  renderClients();
+  renderInvoices();
+  renderContracts();
+  renderTiers();
+}
+
+function renderStats(stats) {
+  if (!stats) return;
+  const open = allTickets.filter(t => t.status === 'open').length;
+  const progress = allTickets.filter(t => t.status === 'progress').length;
+  const resolved = allTickets.filter(t => t.status === 'resolved').length;
+  const high = allTickets.filter(t => t.priority === 'high' && t.status !== 'resolved' && t.status !== 'closed').length;
+  const invStats = stats.invoices || {};
+  document.getElementById('statsGrid').innerHTML = [
+    { l:'Open Tickets', v:open, c:open>3?'danger':'' },
+    { l:'In Progress', v:progress, c:'info' },
+    { l:'Resolved', v:resolved, c:'success' },
+    { l:'High Priority', v:high, c:high>0?'danger':'' },
+    { l:'MRR', v:'$' + (stats.mrr || 0), c:'' },
+    { l:'Clients', v:allClients.length, c:'' },
+    { l:'Revenue', v:'$' + (invStats.totalRevenue || 0), c:'success' },
+    { l:'Pending', v:'$' + (invStats.pendingRevenue || 0), c:'warn' },
+  ].map(s => `<div class="stat-card"><div class="sc-label">${s.l}</div><div class="sc-value ${s.c}">${s.v}</div></div>`).join('');
+
+  const openBadge = document.getElementById('openBadge');
+  if (open > 0) { openBadge.textContent = open; openBadge.style.display = 'inline'; } else { openBadge.style.display = 'none'; }
+
+  const recent = allTickets.slice(0, 4);
+  document.getElementById('recentTickets').innerHTML = recent.map(t =>
+    `<div class="ticket-row priority-${t.priority}" style="margin-bottom:0.3rem;padding:0.6rem;"><div><div class="tr-id">${t.id}</div><div class="tr-subject" style="font-size:0.8rem;">${t.subject}</div></div><div class="tr-right">${statusBadge(t.status)}<span style="font-family:var(--mono);font-size:0.5rem;color:var(--muted)">${relTime(t.updated_at||t.created_at)}</span></div></div>`
+  ).join('');
+
+  loadActivityFeed();
+}
+
+async function loadActivityFeed() {
+  const acts = await api('/api/activities?limit=10');
+  if (!acts) return;
+  const dotColors = { ticket:'var(--info)', invoice:'var(--gold)', client:'var(--success)', contract:'var(--warn)' };
+  document.getElementById('activityFeed').innerHTML = acts.map(a =>
+    `<div class="activity-item"><span class="activity-dot" style="background:${dotColors[a.entity_type]||'var(--muted)'}"></span><div class="activity-body"><span style="color:var(--gold)">${a.type.replace(/_/g,' ')}</span><br><span style="color:var(--dim)">${a.description}</span></div><span class="activity-time">${relTime(a.created_at)}</span></div>`
+  ).join('');
+}
+
+// ── Tickets ──────────────────────────────────
+function renderTickets() {
+  let filtered = [...allTickets];
+  if (currentFilter === 'high') filtered = filtered.filter(t => t.priority === 'high' && t.status !== 'resolved' && t.status !== 'closed');
+  else if (currentFilter !== 'all') filtered = filtered.filter(t => t.status === currentFilter);
+  document.getElementById('ticketsList').innerHTML = filtered.map(t =>
+    `<div class="ticket-row priority-${t.priority}" onclick="showTicketDetail(${t.id})">
+      <div><div class="tr-id">${t.id || '#' + t.id}</div><div class="tr-subject">${t.subject}</div><div class="tr-meta"><span>${t.contact_name||t.company_name||''}</span><span>${t.category||''}</span></div></div>
+      <div class="tr-right">${statusBadge(t.status)}${priorityBadge(t.priority)}<span style="font-family:var(--mono);font-size:0.5rem;color:var(--muted)">${relTime(t.updated_at||t.created_at)}</span></div>
+    </div>`
+  ).join('') || '<div style="color:var(--muted);padding:2rem;text-align:center;">No tickets match this filter.</div>';
+}
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('#filterBar .filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentFilter = chip.dataset.filter;
+  renderTickets();
+});
+
+async function showTicketDetail(id) {
+  const t = await api(`/api/tickets/${id}`);
+  if (!t) return;
+  modal(`
+    <div class="modal-title">${t.subject}</div>
+    <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+      ${statusBadge(t.status)}${priorityBadge(t.priority)}
+      <span style="font-family:var(--mono);font-size:0.5rem;color:var(--muted);margin-left:auto;">#${t.id}</span>
+    </div>
+    <div style="margin-bottom:1rem;font-size:0.82rem;color:var(--dim);line-height:1.5;">${(t.description||'').replace(/\n/g,'<br>')}</div>
+    <div style="margin-bottom:0.75rem;font-family:var(--mono);font-size:0.55rem;color:var(--muted);text-transform:uppercase;">Messages</div>
+    <div id="ticketMessages">${(t.messages||[]).map(m =>
+      `<div style="padding:0.6rem 0;border-bottom:0.5px solid var(--border);"><div style="font-size:0.65rem;color:var(--gold);margin-bottom:0.15rem;">${m.author} · ${relTime(m.created_at)}</div><div style="font-size:0.8rem;color:var(--dim);">${m.text}</div></div>`
+    ).join('')}</div>
+    <div style="margin-top:0.75rem;display:flex;gap:0.5rem;">
+      <select id="replyStatusSelect"><option value="">Keep status</option><option value="open">Open</option><option value="progress">In Progress</option><option value="resolved">Resolved</option></select>
+      <input id="replyInput" placeholder="Type a reply..." style="flex:1;" />
+      <button class="btn-gold btn-sm" onclick="sendReply(${id})">Send</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost btn-sm" onclick="closeModal()">Close</button>
+      <button class="btn-danger btn-sm" onclick="deleteTicketConfirm(${id})" style="margin-left:auto;">Delete</button>
+    </div>
+  `);
+  document.getElementById('replyInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendReply(id); });
+}
+
+async function sendReply(id) {
+  const text = document.getElementById('replyInput').value.trim();
+  if (!text) return;
+  const status = document.getElementById('replyStatusSelect').value;
+  if (status) await api(`/api/tickets/${id}`, { method:'PUT', body: JSON.stringify({ status }) });
+  await api(`/api/tickets/${id}/reply`, { method:'POST', body: JSON.stringify({ text }) });
+  toast('Reply sent', 'Reply added to ticket #' + id);
+  showTicketDetail(id);
+  refreshAll();
+}
+
+async function deleteTicketConfirm(id) {
+  if (!confirm('Delete this ticket?')) return;
+  await api(`/api/tickets/${id}`, { method:'DELETE' });
+  closeModal();
+  toast('Deleted', 'Ticket #' + id + ' deleted');
+  refreshAll();
+}
+
+// ── Clients ──────────────────────────────────
+function renderClients(search = '') {
+  let list = allClients;
+  if (search) { const q = search.toLowerCase().trim(); list = list.filter(c => (c.contact_name||'').toLowerCase().includes(q) || (c.contact_email||'').toLowerCase().includes(q) || (c.company_name||'').toLowerCase().includes(q)); }
+  document.getElementById('clientsList').innerHTML = list.map(c =>
+    `<div class="client-row" onclick="showClientDetail(${c.id})">
+      <div><div class="cr-name">${c.contact_name} <span style="font-weight:400;color:var(--muted);font-size:0.8rem;">· ${c.company_name||''}</span></div><div class="cr-meta">${c.contact_email}${c.contact_phone?' · '+c.contact_phone:''}</div></div>
+      <div class="tr-right"><span style="font-family:var(--mono);font-size:0.5rem;color:var(--gold)">${c.tier_name||'—'}</span><span style="font-family:var(--mono);font-size:0.5rem;color:var(--muted)">${c.status}</span></div>
+    </div>`
+  ).join('') || '<div style="color:var(--muted);padding:2rem;text-align:center;">No clients found.</div>';
+}
+
+document.getElementById('clientSearch').addEventListener('input', e => renderClients(e.target.value));
+
+function showCreateClient() {
+  const tierOpts = allTiers.map(t => `<option value="${t.id}">${t.name} ($${t.monthly_price}/mo)</option>`).join('');
+  modal(`
+    <div class="modal-title">New Client</div>
+    <div class="form-group"><label>Company Name</label><input id="fccCompany" /></div>
+    <div class="form-grid-2"><div class="form-group"><label>Contact Name</label><input id="fccName" /></div><div class="form-group"><label>Contact Email</label><input id="fccEmail" type="email" /></div></div>
+    <div class="form-grid-2"><div class="form-group"><label>Phone</label><input id="fccPhone" /></div><div class="form-group"><label>Service Tier</label><select id="fccTier"><option value="">— None —</option>${tierOpts}</select></div></div>
+    <div class="modal-actions"><button class="btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn-gold btn-sm" onclick="createClientAction()">Create</button></div>
+  `);
+}
+
+async function createClientAction() {
+  const body = {
+    company_name: document.getElementById('fccCompany').value,
+    contact_name: document.getElementById('fccName').value,
+    contact_email: document.getElementById('fccEmail').value,
+    contact_phone: document.getElementById('fccPhone').value,
+    service_tier_id: document.getElementById('fccTier').value || null,
+  };
+  if (!body.company_name || !body.contact_name || !body.contact_email) { toast('Error','Company, name, and email required'); return; }
+  await api('/api/clients', { method:'POST', body: JSON.stringify(body) });
+  closeModal();
+  toast('Created','Client added');
+  refreshAll();
+}
+
+async function showClientDetail(id) {
+  const c = await api(`/api/clients/${id}`);
+  if (!c) return;
+  modal(`
+    <div class="modal-title">${c.contact_name}</div>
+    <div style="margin-bottom:1rem;font-size:0.82rem;color:var(--dim);">
+      <div><strong style="color:var(--white);">Company:</strong> ${c.company_name||'—'}</div>
+      <div><strong style="color:var(--white);">Email:</strong> ${c.contact_email}</div>
+      <div><strong style="color:var(--white);">Phone:</strong> ${c.contact_phone||'—'}</div>
+      <div><strong style="color:var(--white);">Status:</strong> ${c.status}</div>
+      <div><strong style="color:var(--white);">Tier:</strong> ${c.tier_name||'—'}</div>
+      <div><strong style="color:var(--white);">Notes:</strong> ${c.notes||'—'}</div>
+    </div>
+    <div style="margin-bottom:0.5rem;font-family:var(--mono);font-size:0.55rem;color:var(--muted);text-transform:uppercase;">Tickets (${(c.tickets||[]).length})</div>
+    ${(c.tickets||[]).map(t => `<div style="padding:0.4rem 0;border-bottom:0.5px solid var(--border);font-size:0.8rem;"><span style="color:var(--gold)">#${t.id}</span> ${t.subject} <span style="color:var(--muted);font-size:0.7rem;">· ${t.status}</span></div>`).join('')||'<div style="color:var(--muted);font-size:0.8rem;">No tickets</div>'}
+    <div class="modal-actions"><button class="btn-ghost btn-sm" onclick="closeModal()">Close</button></div>
+  `);
+}
+
+// ── Invoices ──────────────────────────────────
+function renderInvoices() {
+  let filtered = [...allInvoices];
+  if (currentInvFilter !== 'all') filtered = filtered.filter(i => i.status === currentInvFilter);
+  document.getElementById('invoicesList').innerHTML = filtered.length ? `<table>
+    <thead><tr><th>Invoice</th><th>Client</th><th>Amount</th><th>Status</th><th>Due</th><th>Paid</th></tr></thead>
+    <tbody>${filtered.map(i => `<tr style="cursor:pointer;" onclick="showInvoiceDetail(${i.id})">
+      <td style="color:var(--gold);font-family:var(--mono);font-size:0.7rem;">${i.invoice_number}</td>
+      <td>${i.company_name||i.contact_name||'—'}</td>
+      <td style="font-family:var(--mono);">$${i.amount}</td>
+      <td>${invStatusBadge(i.status)}</td>
+      <td style="font-family:var(--mono);font-size:0.7rem;">${i.due_date||'—'}</td>
+      <td style="font-family:var(--mono);font-size:0.7rem;color:${i.paid_at?'var(--success)':'var(--muted)'}">${i.paid_at||'—'}</td>
+    </tr>`).join('')}</tbody></table>` : '<div style="color:var(--muted);padding:2rem;text-align:center;">No invoices match this filter.</div>';
+}
+
+document.getElementById('invoiceFilterBar').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('#invoiceFilterBar .filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentInvFilter = chip.dataset.invFilter;
+  renderInvoices();
+});
+
+function showCreateInvoice() {
+  const clientOpts = allClients.map(c => `<option value="${c.id}">${c.company_name||c.contact_name}</option>`).join('');
+  modal(`
+    <div class="modal-title">New Invoice</div>
+    <div class="form-group"><label>Client</label><select id="fciClient">${clientOpts}</select></div>
+    <div class="form-grid-2"><div class="form-group"><label>Amount ($)</label><input id="fciAmount" type="number" step="0.01" /></div><div class="form-group"><label>Due Date</label><input id="fciDue" type="date" /></div></div>
+    <div class="form-group"><label>Notes</label><textarea id="fciNotes" rows="2"></textarea></div>
+    <div class="modal-actions"><button class="btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn-gold btn-sm" onclick="createInvoiceAction()">Create</button></div>
+  `);
+  document.getElementById('fciDue').value = new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+}
+
+async function createInvoiceAction() {
+  const body = {
+    client_id: parseInt(document.getElementById('fciClient').value),
+    amount: parseFloat(document.getElementById('fciAmount').value),
+    due_date: document.getElementById('fciDue').value,
+    notes: document.getElementById('fciNotes').value,
+  };
+  if (!body.client_id || !body.amount) { toast('Error','Client and amount required'); return; }
+  await api('/api/invoices', { method:'POST', body: JSON.stringify(body) });
+  closeModal();
+  toast('Created','Invoice created');
+  refreshAll();
+}
+
+async function showInvoiceDetail(id) {
+  const i = await api(`/api/invoices/${id}`);
+  if (!i) return;
+  modal(`
+    <div class="modal-title">${i.invoice_number}</div>
+    <div style="margin-bottom:1rem;font-size:0.82rem;color:var(--dim);">
+      <div><strong style="color:var(--white);">Client:</strong> ${i.company_name||i.contact_name||'—'}</div>
+      <div><strong style="color:var(--white);">Amount:</strong> <span style="font-family:var(--mono);color:var(--gold);">$${i.amount}</span></div>
+      <div><strong style="color:var(--white);">Status:</strong> ${invStatusBadge(i.status)}</div>
+      <div><strong style="color:var(--white);">Due Date:</strong> ${i.due_date||'—'}</div>
+      ${i.paid_at ? `<div><strong style="color:var(--white);">Paid:</strong> ${i.paid_at} ${i.paid_amount ? '($'+i.paid_amount+')' : ''}</div>` : ''}
+      ${i.notes ? `<div><strong style="color:var(--white);">Notes:</strong> ${i.notes}</div>` : ''}
+    </div>
+    <div class="modal-actions">
+      ${i.status !== 'paid' ? `<button class="btn-gold btn-sm" onclick="markInvoicePaid(${i.id})">Mark Paid</button>` : ''}
+      ${i.status === 'pending' ? `<button class="btn-outline btn-sm" onclick="markInvoiceSent(${i.id})">Mark Sent</button>` : ''}
+      ${i.status !== 'cancelled' ? `<button class="btn-ghost btn-sm" onclick="markInvoiceOverdue(${i.id})">Mark Overdue</button>` : ''}
+      <button class="btn-ghost btn-sm" onclick="closeModal()">Close</button>
+    </div>
+  `);
+}
+
+async function markInvoicePaid(id) {
+  await api(`/api/invoices/${id}`, { method:'PUT', body: JSON.stringify({ status:'paid' }) });
+  closeModal(); toast('Updated','Invoice marked paid'); refreshAll();
+}
+async function markInvoiceSent(id) {
+  await api(`/api/invoices/${id}`, { method:'PUT', body: JSON.stringify({ status:'sent' }) });
+  closeModal(); toast('Updated','Invoice marked sent'); refreshAll();
+}
+async function markInvoiceOverdue(id) {
+  await api(`/api/invoices/${id}`, { method:'PUT', body: JSON.stringify({ status:'overdue' }) });
+  closeModal(); toast('Updated','Invoice marked overdue'); refreshAll();
+}
+
+// ── Contracts ──────────────────────────────────
+function renderContracts() {
+  document.getElementById('contractsList').innerHTML = allContracts.length ? `<table>
+    <thead><tr><th>Client</th><th>Tier</th><th>Rate</th><th>Start</th><th>End</th><th>Status</th></tr></thead>
+    <tbody>${allContracts.map(c => `<tr>
+      <td>${c.company_name||'—'}</td>
+      <td>${c.tier_name||'—'}</td>
+      <td style="font-family:var(--mono);color:var(--gold);">$${c.monthly_rate}/mo</td>
+      <td style="font-family:var(--mono);font-size:0.7rem;">${c.start_date||'—'}</td>
+      <td style="font-family:var(--mono);font-size:0.7rem;">${c.end_date||'—'}</td>
+      <td>${statusBadge(c.status)}</td>
+    </tr>`).join('')}</tbody></table>` : '<div style="color:var(--muted);padding:2rem;text-align:center;">No contracts found.</div>';
+}
+
+function showCreateContract() {
+  const clientOpts = allClients.map(c => `<option value="${c.id}">${c.company_name||c.contact_name}</option>`).join('');
+  const tierOpts = allTiers.map(t => `<option value="${t.id}" data-rate="${t.monthly_price}">${t.name} ($${t.monthly_price}/mo)</option>`).join('');
+  modal(`
+    <div class="modal-title">New Contract</div>
+    <div class="form-group"><label>Client</label><select id="fccClient">${clientOpts}</select></div>
+    <div class="form-grid-2"><div class="form-group"><label>Service Tier</label><select id="fccTier">${tierOpts}</select></div><div class="form-group"><label>Monthly Rate ($)</label><input id="fccRate" type="number" step="0.01" /></div></div>
+    <div class="form-grid-2"><div class="form-group"><label>Start Date</label><input id="fccStart" type="date" /></div><div class="form-group"><label>End Date</label><input id="fccEnd" type="date" /></div></div>
+    <div class="modal-actions"><button class="btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn-gold btn-sm" onclick="createContractAction()">Create</button></div>
+  `);
+  document.getElementById('fccStart').value = new Date().toISOString().slice(0,10);
+  document.getElementById('fccTier').addEventListener('change', function() {
+    const opt = this.options[this.selectedIndex];
+    if (opt && opt.dataset.rate) document.getElementById('fccRate').value = opt.dataset.rate;
+  });
+}
+
+async function createContractAction() {
+  const body = {
+    client_id: parseInt(document.getElementById('fccClient').value),
+    service_tier_id: parseInt(document.getElementById('fccTier').value) || null,
+    monthly_rate: parseFloat(document.getElementById('fccRate').value),
+    start_date: document.getElementById('fccStart').value,
+    end_date: document.getElementById('fccEnd').value || null,
+  };
+  if (!body.client_id || !body.monthly_rate || !body.start_date) { toast('Error','Client, rate, and start date required'); return; }
+  await api('/api/contracts', { method:'POST', body: JSON.stringify(body) });
+  closeModal();
+  toast('Created','Contract created');
+  refreshAll();
+}
+
+// ── Tiers ──────────────────────────────────
+function renderTiers() {
+  document.getElementById('tiersList').innerHTML = allTiers.length ? `<table>
+    <thead><tr><th>Name</th><th>Price</th><th>Description</th><th>Features</th><th>Status</th></tr></thead>
+    <tbody>${allTiers.map(t => `<tr>
+      <td style="color:var(--gold);font-weight:500;">${t.name}</td>
+      <td style="font-family:var(--mono);">$${t.monthly_price}/mo</td>
+      <td style="font-size:0.75rem;color:var(--dim);">${t.description||''}</td>
+      <td style="font-size:0.7rem;color:var(--muted);">${(()=>{try{return JSON.parse(t.features||'[]').join(', ')}catch{return t.features||'—'}})()}</td>
+      <td>${t.is_active ? '<span style="color:var(--success);">Active</span>' : '<span style="color:var(--muted);">Inactive</span>'}</td>
+    </tr>`).join('')}</tbody></table>` : '<div style="color:var(--muted);padding:2rem;text-align:center;">No service tiers found.</div>';
+}
+
+function showCreateTier() {
+  modal(`
+    <div class="modal-title">New Service Tier</div>
+    <div class="form-grid-2"><div class="form-group"><label>Name</label><input id="fctName" /></div><div class="form-group"><label>Monthly Price ($)</label><input id="fctPrice" type="number" step="0.01" /></div></div>
+    <div class="form-group"><label>Description</label><textarea id="fctDesc" rows="2"></textarea></div>
+    <div class="form-group"><label>Features (one per line)</label><textarea id="fctFeatures" rows="3" placeholder="24/7 support&#10;Remote monitoring&#10;Anti-virus"></textarea></div>
+    <div class="modal-actions"><button class="btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn-gold btn-sm" onclick="createTierAction()">Create</button></div>
+  `);
+}
+
+async function createTierAction() {
+  const name = document.getElementById('fctName').value;
+  const price = parseFloat(document.getElementById('fctPrice').value);
+  if (!name || !price) { toast('Error','Name and price required'); return; }
+  const features = document.getElementById('fctFeatures').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  await api('/api/tiers', { method:'POST', body: JSON.stringify({ name, description: document.getElementById('fctDesc').value, monthly_price: price, features: JSON.stringify(features) }) });
+  closeModal();
+  toast('Created','Service tier created');
+  refreshAll();
+}
+
+// ── Analytics ────────────────────────────────
+async function loadAnalytics() {
+  const data = await api('/api/analytics');
+  if (!data) return;
+  document.getElementById('analyticsStats').innerHTML = [
+    { l:'Today', v:data.today||0 }, { l:'Last 7 Days', v:data.last7||0 },
+    { l:'Last 30 Days', v:data.last30||0 }
+  ].map(s => `<div class="stat-card"><div class="sc-label">${s.l}</div><div class="sc-value">${s.v}</div></div>`).join('');
+  document.getElementById('topPages').innerHTML = (data.topPages||[]).map(p =>
+    `<div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:0.5px solid var(--border);font-size:0.8rem;"><span style="color:var(--dim)">${p.path}</span><span style="color:var(--gold);font-family:var(--mono)">${p.views}</span></div>`
+  ).join('') || '<div style="color:var(--muted)">No data</div>';
+  document.getElementById('viewsOverTime').innerHTML = (data.viewsOverTime||[]).map(v =>
+    `<div style="display:flex;justify-content:space-between;padding:0.3rem 0;font-size:0.75rem;border-bottom:0.5px solid var(--border);"><span style="color:var(--dim)">${v.date}</span><span style="color:var(--gold);font-family:var(--mono)">${v.views}</span></div>`
+  ).join('') || '<div style="color:var(--muted)">No data</div>';
+}
+
+// ── Navigation ───────────────────────────────
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    const view = el.dataset.view;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+    if (view === 'analytics') loadAnalytics();
+  });
+});
+
+function logout() {
+  fetch('/admin/logout', { method:'POST', credentials:'include' }).then(() => { window.location.href = '/admin/login'; });
+}
+
+checkAuth();
+setInterval(() => { refreshAll(); }, 30000);
+</script>
+</body>
+</html>
