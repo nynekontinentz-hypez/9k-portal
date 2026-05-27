@@ -1,9 +1,8 @@
-# NineKOS — MSP Client Portal
+# 9K Systems Inc — MSP Client Portal
 
-IT services client portal for NineKOS. Admins manage clients, contracts, service tiers, and support tickets. Clients submit tickets via a public form; admins track and resolve them. Public-facing pages show service plans and blog content.
+IT services client portal for 9K Systems Inc. Admins manage clients, contracts, service tiers, and support tickets. Clients submit tickets via a public form; admins track and resolve them. Public-facing pages show service plans and blog content.
 
-**Live:** https://ninekos.polsia.app
-
+**Live:** https://9ksystems.net
 ---
 
 ## Stack
